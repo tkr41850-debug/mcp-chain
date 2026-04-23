@@ -33,3 +33,44 @@ func TestWordlistBoundaries(t *testing.T) {
 	require.Equal(t, "acid", words[0], "first word must be 'acid' (EFF line 1)")
 	require.Equal(t, "zoom", words[wordlistSize-1], "last word must be 'zoom' (EFF line 1296)")
 }
+
+// TestAllocate is the table-driven boundary test required by CORE-07.
+// Covers: lower bound, lower+1, wordlist end, fallback start, fallback end
+// at 4-digit boundary, and widening past 4 digits.
+func TestAllocate(t *testing.T) {
+	tests := []struct {
+		name    string
+		counter uint64
+		want    string
+	}{
+		{"first word", 0, "acid"},
+		{"second word", 1, "acorn"},
+		{"last word", 1295, "zoom"},
+		{"first fallback (hex-0001)", 1296, "hex-0001"},
+		{"second fallback (hex-0002)", 1297, "hex-0002"},
+		{"fallback at hex-fffe", 66829, "hex-fffe"},  // 66829 - 1295 = 65534 = 0xfffe
+		{"boundary before widen", 66830, "hex-ffff"},  // 66830 - 1295 = 65535 = 0xffff
+		{"widen to 5 digits", 66831, "hex-10000"},     // 66831 - 1295 = 65536 = 0x10000
+		{"widen + 1", 66832, "hex-10001"},
+	}
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.want, Allocate(tc.counter))
+		})
+	}
+}
+
+// TestAllocateMonotonicUniqueOverBoundary asserts that no two counters in
+// [1290, 1310] produce the same string. Catches off-by-one at the
+// wordlist→hex handoff.
+func TestAllocateMonotonicUniqueOverBoundary(t *testing.T) {
+	seen := make(map[string]uint64, 21)
+	for c := uint64(1290); c <= 1310; c++ {
+		got := Allocate(c)
+		if prev, dup := seen[got]; dup {
+			t.Fatalf("counter %d and %d both produced %q", prev, c, got)
+		}
+		seen[got] = c
+	}
+}
