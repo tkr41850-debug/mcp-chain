@@ -2,11 +2,11 @@
 
 ## What This Is
 
-A lightweight MCP server (distributed as a Claude Code plugin) that lets you chain Claude Code sessions together. One session registers a lock with a resolution condition and gets back a short word-ID; another session (in a different conversation) waits on that ID until the first session resolves it. Primary user: the author, for orchestrating multi-session Claude Code workflows.
+A lightweight MCP server (distributed as a Claude Code plugin) that lets you chain Claude Code sessions together at arbitrary fan-in/fan-out. Any session can register a lock with a resolution condition and get back a short word-ID; any number of other sessions (in different conversations) can wait on that ID until the registering session resolves it. Primary user: the author, for orchestrating multi-session Claude Code workflows at scale.
 
 ## Core Value
 
-Two Claude Code sessions can coordinate via a shared lock — register in one, wait in another, resolve when ready — with **minimal overhead** (fast startup, low memory, terse tool prompts, small binary).
+N Claude Code sessions can coordinate via shared locks — register in one, any number of others wait on it, resolve when ready — with **minimal overhead** (fast startup, low memory, terse tool prompts, small binary).
 
 ## Requirements
 
@@ -46,7 +46,7 @@ Two Claude Code sessions can coordinate via a shared lock — register in one, w
 ### Out of Scope
 
 - **Auto-expiration of resolved IDs** — explicit `/chain-purge` only; keeping simple and predictable
-- **Networked / multi-machine coordination** — local-filesystem only; both sessions must share the state file
+- **Networked / multi-machine coordination** — local-filesystem only; all participating sessions must share the state file
 - **Daemon / socket server** — rejected in favor of shared JSON file for simpler lifecycle (no background process to manage)
 - **SQLite / embedded DB** — rejected; JSON + flock is sufficient for expected entry counts
 - **Programmatic conditions** (shell expressions polled by the server) — rejected; natural-language, Claude-judged resolution is simpler and more flexible
@@ -56,10 +56,10 @@ Two Claude Code sessions can coordinate via a shared lock — register in one, w
 
 ## Context
 
-- **Target user:** solo developer (the author) orchestrating multiple parallel Claude Code conversations. Two Claude Code processes can run simultaneously (different terminals / different working dirs) and need a coordination primitive
+- **Target user:** solo developer (the author) orchestrating multiple parallel Claude Code conversations. N Claude Code processes can run simultaneously (different terminals / different working dirs) and need a shared coordination primitive — usage scales to arbitrary fan-in/fan-out (one registrant + many waiters, or many registrants each with their own waiters)
 - **Why MCP:** Claude Code natively consumes MCP servers; shipping as a Claude Code plugin gives zero-config install for this audience
 - **Why Go:** best fit for stated constraints — single static binary (~10MB), fast startup (<50ms), low runtime memory, cross-compiles trivially for CI release artifacts. Pure-Go deps only (no cgo) to keep cross-compile simple
-- **Usage shape:** `/chain-reg` in session A returns a word. The user tells session B to run `/chain-wait <word>`, which spins up a bash monitor. Session A eventually satisfies its condition and Claude calls the `resolve` MCP tool with the word. The monitor in session B sees resolved state and prints `continue`, which unblocks session B's flow
+- **Usage shape:** `/chain-reg` in a session returns a word-ID. The user tells any number of other sessions to run `/chain-wait <word>`, each spinning up its own bash monitor. When the registering session satisfies its condition, Claude calls the `resolve` MCP tool with the word once; every waiting monitor sees resolved state on its next poll and prints `continue`, unblocking each waiting session. The same pattern composes in any fan-in/fan-out shape
 - **Open question for research/planning:** whether the MCP server can reliably distinguish "the session that registered an ID" from "some other session" via MCP per-connection identity. Preferred outcome: enforce that only the registering session can resolve. Needs investigation into MCP stdio identity guarantees before committing to a design. User is OK with the default of "any connection can resolve once" if session-link isn't reliably possible — flag this decision point during research
 
 ## Constraints
