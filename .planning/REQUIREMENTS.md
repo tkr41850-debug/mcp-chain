@@ -97,40 +97,48 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | TBD | Pending |
-| CORE-02 | TBD | Pending |
-| CORE-03 | TBD | Pending |
-| CORE-04 | TBD | Pending |
-| CORE-05 | TBD | Pending |
-| CORE-06 | TBD | Pending |
-| CORE-07 | TBD | Pending |
-| CORE-08 | TBD | Pending |
-| CORE-09 | TBD | Pending |
-| CORE-10 | TBD | Pending |
-| MCP-01 | TBD | Pending |
-| MCP-02 | TBD | Pending |
-| MCP-03 | TBD | Pending |
-| CMD-01 | TBD | Pending |
-| CMD-02 | TBD | Pending |
-| CMD-03 | TBD | Pending |
-| CMD-04 | TBD | Pending |
-| CMD-05 | TBD | Pending |
-| HELPER-01 | TBD | Pending |
-| HELPER-02 | TBD | Pending |
-| DIST-01 | TBD | Pending |
-| DIST-02 | TBD | Pending |
-| DIST-03 | TBD | Pending |
-| DIST-04 | TBD | Pending |
-| QA-01 | TBD | Pending |
-| QA-02 | TBD | Pending |
-| QA-03 | TBD | Pending |
-| QA-04 | TBD | Pending |
+| CORE-01 | Phase 1 (skeleton) + Phase 6 (complete) | Pending |
+| CORE-02 | Phase 5 | Pending |
+| CORE-03 | Phase 5 | Pending |
+| CORE-04 | Phase 4 | Pending |
+| CORE-05 | Phase 4 | Pending |
+| CORE-06 | Phase 3 | Pending |
+| CORE-07 | Phase 2 | Pending |
+| CORE-08 | Phase 4 | Pending |
+| CORE-09 | Phase 4 | Pending |
+| CORE-10 | Phase 5 | Pending |
+| MCP-01 | Phase 5 | Pending |
+| MCP-02 | Phase 1 | Pending |
+| MCP-03 | Phase 5 | Pending |
+| CMD-01 | Phase 8 | Pending |
+| CMD-02 | Phase 8 | Pending |
+| CMD-03 | Phase 7 (CLI) + Phase 8 (slash command) | Pending |
+| CMD-04 | Phase 7 (CLI) + Phase 8 (slash command) | Pending |
+| CMD-05 | Phase 8 | Pending |
+| HELPER-01 | Phase 8 | Pending |
+| HELPER-02 | Phase 8 | Pending |
+| DIST-01 | Phase 8 | Pending |
+| DIST-02 | Phase 9 | Pending |
+| DIST-03 | Phase 1 | Pending |
+| DIST-04 | Phase 10 | Pending |
+| QA-01 | Phase 9 | Pending |
+| QA-02 | Phase 9 | Pending |
+| QA-03 | Phase 9 | Pending |
+| QA-04 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 28 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 28 (will be filled by roadmapper)
+- Mapped to phases: 28
+- Unmapped: 0
+
+**Notes:**
+- Unit and integration tests are authored continuously alongside implementation in Phases 2-8 as normal engineering practice. QA-01 and QA-02 land in Phase 9 as the *requirement verification* — that is where the comprehensive suite becomes the blocking gate (via `go test -race` in CI, QA-03).
+- CORE-01 is split: the subcommand skeleton with `--version` lands in Phase 1 (needed by the startup/size smoke test); `status` completes in Phase 6; `list`/`purge`/`resolve` complete in Phase 7. The full requirement is satisfied at Phase 7 close; Phase 1 ownership is for the skeleton + dispatch wiring.
+- CMD-03 and CMD-04 split by surface: CLI semantics land in Phase 7 (`mcp-chain list`, `mcp-chain purge`); slash-command wrapper prompts land in Phase 8 (`/chain-list`, `/chain-purge`). Each REQ-ID is satisfied end-to-end only when both phases close.
+- Session-link (CORE-08) and state schema (CORE-09) live in Phase 4 (the store phase) per research resolution — not a separate phase.
+- Stdout discipline (MCP-02) and size/startup gates (DIST-03) are established in Phase 1, before any MCP handler code is written (Phase 5).
+- License selection is deferred to pre-release polish and is intentionally *not* a roadmap phase.
 
 ---
 *Requirements defined: 2026-04-23*
-*Last updated: 2026-04-23 after initial definition*
+*Last updated: 2026-04-23 after roadmap creation (phase mappings)*
