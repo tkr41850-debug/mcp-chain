@@ -37,6 +37,12 @@ N Claude Code sessions can coordinate via shared locks — register in one, any 
 
 - [ ] **HELPER-01**: Repo ships a small bash script that wraps `mcp-chain status <id>` in a 1-second poll loop and prints `continue` on resolve. `/chain-wait` tells Claude to run it via the monitor tool
 
+**Quality & Testing**
+
+- [ ] **QA-01**: Unit tests for all core logic (wordlist allocation, state file read/write under lock, ID lookup, resolve state transitions, timeout parsing)
+- [ ] **QA-02**: Integration tests exercising full flows — register → status pending → resolve → status resolved; concurrent waiters on the same ID; double-resolve error; unknown-ID error; cross-process flock safety (spawn two processes, verify no state corruption)
+- [ ] **QA-03**: CI runs `go test ./...` with race detector (`-race`) on every push/PR; failing tests block merges and releases
+
 **Distribution & DX**
 
 - [ ] **DIST-01**: Packaged as a Claude Code plugin (marketplace/plugin manifest, slash-command files) installable from the GitHub repo
