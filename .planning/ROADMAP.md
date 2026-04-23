@@ -13,7 +13,7 @@ mcp-chain ships as a single static Go binary (≤15 MB, ≤100 ms startup, ≤20
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Enforcement Gates** - Module scaffold, stdout discipline, lint/size/startup CI gates
-- [ ] **Phase 2: Wordlist & ID Allocator** - EFF wordlist embed + deterministic ID allocator with hex fallback
+- [x] **Phase 2: Wordlist & ID Allocator** - EFF wordlist embed + deterministic ID allocator with hex fallback
 - [ ] **Phase 3: XDG Path Resolution** - State file path resolution with XDG compliance and directory permissions
 - [ ] **Phase 4: Store Core, Flock & Atomic Writes** - Flock-protected JSON store with atomic RMW, schema versioning, and OwnerToken session-link
 - [ ] **Phase 5: MCP Server Adapter** - MCP stdio server with register/resolve tools and terse descriptions
