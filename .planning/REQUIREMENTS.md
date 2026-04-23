@@ -14,7 +14,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CORE-03**: MCP tool `resolve(id string) -> void` — marks an ID resolved. Errors distinctly on: unknown ID, already-resolved ID, OwnerToken mismatch
 - [ ] **CORE-04**: State persisted to a shared JSON file with `gofrs/flock` exclusive lock during read-modify-write. Flock critical section covers the full RMW, never held across MCP tool invocations. `list`/`status` acquire a shared lock for reads
 - [ ] **CORE-05**: Atomic writes via `google/renameio/v2` (temp-file + rename + directory fsync). State file mode `0600`. Parent directory created with mode `0700` if missing
-- [ ] **CORE-06**: State file path resolution — `$XDG_STATE_HOME/mcp-chain/state.json` if `$XDG_STATE_HOME` is set; otherwise `~/.mcp-chain/state.json`. Path documented in `--help` and README
+- [x] **CORE-06**: State file path resolution — `$XDG_STATE_HOME/mcp-chain/state.json` if `$XDG_STATE_HOME` is set; otherwise `~/.mcp-chain/state.json`. Path documented in `--help` and README
 - [ ] **CORE-07**: Word-ID generator uses the EFF short wordlist (1296 words, embedded via `go:embed`). Monotonic `counter` in state selects next word; once exhausted, falls back to hex counter. Counter never decremented on purge (prevents ID reuse)
 - [ ] **CORE-08**: Per-process `OwnerToken` (128-bit crypto/rand) generated at `serve` startup, stored with each registration, and required to match on `resolve`. Provides session-link enforcement without relying on MCP protocol identity. CLI `resolve` escape hatch with `--force` flag for operator-driven recovery
 - [ ] **CORE-09**: State schema versioned via top-level `version` field; unknown versions error clearly. Corrupt JSON error returns actionable message (file path + repair guidance)
@@ -102,7 +102,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CORE-03 | Phase 5 | Pending |
 | CORE-04 | Phase 4 | Pending |
 | CORE-05 | Phase 4 | Pending |
-| CORE-06 | Phase 3 | Pending |
+| CORE-06 | Phase 3 | Complete |
 | CORE-07 | Phase 2 | Pending |
 | CORE-08 | Phase 4 | Pending |
 | CORE-09 | Phase 4 | Pending |
