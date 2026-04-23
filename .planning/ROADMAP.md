@@ -34,7 +34,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. `mcp-chain serve </dev/null` writes exactly zero bytes to stdout (stderr-only logging hard-set in `main()`, `fmt.Print*` forbidden in serve path via a `forbidigo`/lint rule)
   3. CI fails if the stripped binary exceeds 15 MB or if `time mcp-chain --version` exceeds 100 ms on the cold-cache smoke runner
   4. `go vet` + `staticcheck` (or equivalent) run in CI and block on non-zero exit
-**Plans**: TBD
+**Plans**: 3 plans
+  - [ ] 01-01-PLAN.md — Module scaffold + kong wiring + stdout discipline (CORE-01 skeleton, MCP-02)
+  - [ ] 01-02-PLAN.md — Lint config + gate scripts + Makefile (QA-04, DIST-03)
+  - [ ] 01-03-PLAN.md — CI workflow + in-repo smoke tests (DIST-03, QA-04)
 
 ### Phase 2: Wordlist & ID Allocator
 **Goal**: A pure, deterministic `idgen.Allocate(counter uint64) string` is available over the embedded EFF short wordlist with a clean hex fallback past 1296 — fully tested in isolation, zero dependency on store or filesystem.
@@ -144,7 +147,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Enforcement Gates | 0/TBD | Not started | - |
+| 1. Foundation & Enforcement Gates | 0/3 | Planned | - |
 | 2. Wordlist & ID Allocator | 0/TBD | Not started | - |
 | 3. XDG Path Resolution | 0/TBD | Not started | - |
 | 4. Store Core, Flock & Atomic Writes | 0/TBD | Not started | - |

@@ -776,22 +776,19 @@ coverage.*
 | A6 | `golangci-lint v2` is stable and current at Phase 1 execution time | .golangci.yml, ci.yml | v2 was released in 2025 per web search; stable as of 2026-04. Action pinning to `latest` is acceptable; re-evaluate pin to concrete version (e.g. v2.6.0) before first release tag. LOW risk. |
 | A7 | Exit code 3 for "not implemented" does not collide with kong's error codes | internal/cli/stubs.go | kong docs don't specify reserved exit codes. kong's `FatalIfErrorf` exits with code 1 on parse error. Our stubs use `os.Exit(3)` directly; the path through kong's error handling uses exit 1. No collision with status's documented 0/1/2. LOW risk. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Actual GitHub owner for `go mod init` module path**
    - What we know: Placeholder `github.com/anthropics/mcp-chain` is what ARCHITECTURE.md examples use; PROJECT.md says distribution is via "a public GitHub repo" but doesn't name the owner.
-   - What's unclear: The owner login for the GitHub repo that will host mcp-chain.
-   - Recommendation: Planner adds a Phase 1 task 1.0 "Confirm module path" that either extracts from git remote (`git remote get-url origin | sed ...`) or prompts user. If git remote is set, derive from it; else prompt.
+   - RESOLVED: Plan 01-01 Task 1 derives the module path from `git remote get-url origin` at execution time. If no remote is set, use placeholder `github.com/anthropics/mcp-chain` and add a Phase 10 README task to re-verify the module path matches the real GitHub repo. No user prompt required.
 
 2. **Should Phase 1 include a `test` job in CI, given there are no tests yet?**
    - What we know: REQUIREMENTS.md QA-03 says `go test -race ./...` runs in CI on push/PR. Traceability table maps QA-03 to Phase 9.
-   - What's unclear: Whether Phase 1 should pre-wire `go test ./...` (no-op at Phase 1 since no test files exist) so Phase 2 onward adds tests naturally, or whether Phase 9 sets up the race-gate workflow from scratch.
-   - Recommendation: **YES, wire `go test ./...` in Phase 1 CI** (not `-race` — that comes in Phase 9 per QA-03). No-op today, natural home for tests from Phase 2 forward. Cost: 2 lines of yaml. Benefit: tests never retrofit their CI plumbing.
+   - RESOLVED: YES — wire `go test ./...` (no `-race`) in Phase 1 CI. No-op today; natural home for tests from Phase 2 forward. Implemented in Plan 01-03's ci.yml. The `-race` flag is deferred to Phase 9 per QA-03.
 
 3. **Does `golangci-lint-action` cache golangci-lint's own binary across runs?**
    - What we know: The action has built-in caching of the lint results and the binary.
-   - What's unclear: Whether `actions/setup-go@v5`'s `cache: true` and the golangci-lint action's cache interact cleanly.
-   - Recommendation: Accept defaults. First CI run may be slow (~2 min); subsequent runs hit cache. If timing matters, add `skip-cache: false` explicitly to golangci-lint action.
+   - RESOLVED: Accept defaults — no explicit cache configuration needed. First CI run will be slow (~2 min); subsequent runs hit cache. Re-evaluate if first 10 CI runs show consistent cold-cache pain; otherwise close.
 
 ## Environment Availability
 
