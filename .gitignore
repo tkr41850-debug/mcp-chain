@@ -1,0 +1,14 @@
+# Phase 1 binary artifacts
+/mcp-chain
+/mcp-chain.exe
+/dist/
+
+# Go coverage
+*.out
+coverage.*
+
+# Editor & OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
