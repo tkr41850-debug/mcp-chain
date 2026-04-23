@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-04-23)
 
 **Core value:** N Claude Code sessions can coordinate via shared locks — register in one, any number of others wait on it, resolve when ready — with minimal overhead (fast startup, low memory, terse tool prompts, small binary).
-**Current focus:** Phase 2 — Wordlist & ID Allocator
+**Current focus:** Phase 4 — Store Core, Flock & Atomic Writes
 
 ## Current Position
 
