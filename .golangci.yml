@@ -1,0 +1,47 @@
+# .golangci.yml — Phase 1 baseline lint config.
+# v2 config format (top-level `version: "2"` required).
+# Enables govet + staticcheck + forbidigo.
+# Expands at Phase 5+ with import restrictions (ban net/http) and tool-desc token budget probes.
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: standard
+  enable:
+    - forbidigo
+    - staticcheck  # v2 bundles stylecheck + gosimple under this name
+    # govet is in the default `standard` set already; listed for visibility.
+    - govet
+
+  settings:
+    forbidigo:
+      # Forbid fmt.Print / Println / Printf (bare — write to stdout by default).
+      # Allow fmt.Fprint* (takes explicit writer — safe).
+      # Forbid bare `print` and `println` builtins (debug residue, MCP-wire risk).
+      forbid:
+        - pattern: ^fmt\.Print(|f|ln)$
+          msg: "Use fmt.Fprint*(os.Stderr, ...) or slog; stdout is reserved for MCP wire traffic (MCP-02)."
+        - pattern: ^println$
+          msg: "println() is debug residue; use slog.Info or fmt.Fprintln(os.Stderr, ...)."
+        - pattern: ^print$
+          msg: "print() is debug residue; use slog.Info or fmt.Fprintln(os.Stderr, ...)."
+      analyze-types: true
+      exclude-godoc-examples: true
+
+    staticcheck:
+      # Defaults are fine for Phase 1. Phase 5+ may add SA1019-ignore for specific
+      # go-sdk APIs if they land as deprecated-but-stable.
+      checks:
+        - all
+
+    govet:
+      enable:
+        - shadow
+        # Default govet checks apply; shadow is opt-in and helpful.
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
