@@ -1,0 +1,60 @@
+# .github/workflows/ci.yml — Phase 1 CI.
+# Runs on push and PR. Linux-only by design; Phase 9 expands to the cross-compile matrix.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache: true
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: latest   # pins to v2.x current; pin to a specific version (e.g. v2.6.0) before release
+          args: --timeout=5m
+
+  build-and-gate:
+    name: Build + Gates
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache: true
+
+      - name: Build (stripped + trimpath)
+        run: make build
+
+      - name: Size gate (≤ 15 MB stripped)
+        run: ./scripts/check-size.sh ./mcp-chain
+
+      - name: Startup gate (≤ 100 ms P95 of 5 runs)
+        run: ./scripts/check-startup.sh ./mcp-chain
+
+      - name: Stdout silence gate (serve </dev/null writes 0 bytes to stdout)
+        run: ./scripts/check-stdout-silence.sh ./mcp-chain
+
+      - name: Ban net/http import (MCP-01 prep; enforced from Phase 1)
+        run: |
+          if go list -f '{{ join .Deps "\n" }}' ./... | grep -q '^net/http$'; then
+            echo "ERROR: net/http is in the dependency graph. stdio-only; see MCP-01."
+            exit 1
+          fi
+
+      - name: Unit tests (Phase 1 smoke; expands from Phase 2)
+        run: go test ./...
