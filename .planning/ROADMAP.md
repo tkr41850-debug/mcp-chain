@@ -58,7 +58,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. When `$XDG_STATE_HOME` is set, resolved path is `$XDG_STATE_HOME/mcp-chain/state.json`; otherwise `~/.mcp-chain/state.json`
   2. Parent directory is created with mode `0700` if missing; no NSS/`os/user.Current` call runs on the startup path (uses `$HOME` env directly)
   3. Unit tests cover both XDG and HOME branches via env-var manipulation, with `t.TempDir()` isolation
-**Plans**: TBD
+**Plans**: 1 plan
+  - [ ] 03-01-PLAN.md — statepath.Resolve() with XDG + HOME fallback, 0700 MkdirAll, 6 env-isolated tests (CORE-06)
 
 ### Phase 4: Store Core, Flock & Atomic Writes
 **Goal**: The SDK-agnostic hexagonal core — `Register`, `Resolve`, `Get`, `List`, `Purge` over a flock-protected versioned JSON file — is complete, correct under concurrent cross-process load, and exposes the OwnerToken session-link design so both adapters can enforce ownership later.
@@ -150,7 +151,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Foundation & Enforcement Gates | 0/3 | Planned | - |
 | 2. Wordlist & ID Allocator | 0/1 | Planned | - |
-| 3. XDG Path Resolution | 0/TBD | Not started | - |
+| 3. XDG Path Resolution | 0/1 | Planned | - |
 | 4. Store Core, Flock & Atomic Writes | 0/TBD | Not started | - |
 | 5. MCP Server Adapter | 0/TBD | Not started | - |
 | 6. CLI Dispatch & Status Subcommand | 0/TBD | Not started | - |
