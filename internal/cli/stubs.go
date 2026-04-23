@@ -47,8 +47,10 @@ func (c *ListCmd) Run() error {
 	return nil
 }
 
-// PurgeCmd deletes entries. One of <id>, --all, or --resolved is required
-// (kong's xor tag enforces this) — bare `purge` errors at parse time.
+// PurgeCmd deletes entries. Accepts <id>, --all, or --resolved. The xor tag
+// makes --all and --resolved mutually exclusive; one-of-required enforcement
+// (including rejecting bare `purge`) lands in Phase 7 when the real
+// implementation replaces this stub.
 type PurgeCmd struct {
 	ID       string `arg:"" optional:"" help:"Id to purge."`
 	All      bool   `help:"Purge all entries." xor:"target"`
