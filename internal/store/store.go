@@ -1,12 +1,15 @@
 package store
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/anthropics/mcp-chain/internal/idgen"
 )
 
 // Store is a handle to a state.json file. Construct via Open. Methods are
@@ -57,36 +60,138 @@ func Open(path string) (*Store, error) {
 	return &Store{path: path}, nil
 }
 
-// Register is a stub wired in Task 1.4.
+// Register creates a new pending record, allocates a deterministic ID
+// via idgen.Allocate, stamps the OwnerToken, and persists atomically
+// under LOCK_EX. The returned id is the chain entry's word-ID (or
+// hex-NNNN fallback once the wordlist is exhausted).
 func (s *Store) Register(ownerToken, condition string) (string, error) {
-	_ = ownerToken
-	_ = condition
-	return "", errors.New("store: not implemented")
+	var id string
+	err := s.withLockedState(func(st *state) error {
+		// Allocate BEFORE incrementing: first Register at counter=0
+		// must yield words[0] == "acid" (Pitfall 7).
+		id = idgen.Allocate(st.Counter)
+		st.Counter++
+		st.Records[id] = record{
+			ID:         id,
+			Condition:  condition,
+			Status:     statusPending,
+			OwnerToken: ownerToken,
+			CreatedAt:  time.Now().UTC(),
+			ResolvedAt: nil,
+		}
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+	return id, nil
 }
 
-// Resolve is a stub wired in Task 1.4.
+// Resolve marks the record with the given id as resolved. Returns
+// ErrUnknownID if no such record, ErrAlreadyResolved if it's already
+// resolved, and ErrNotOwner if ownerToken does not match the stored
+// token (unless opts.Force is true). Token comparison is constant-time
+// (crypto/subtle) to prevent byte-by-byte timing side channels on the
+// 32-char hex OwnerToken.
 func (s *Store) Resolve(id, ownerToken string, opts ResolveOptions) error {
-	_ = id
-	_ = ownerToken
-	_ = opts
-	return errors.New("store: not implemented")
+	return s.withLockedState(func(st *state) error {
+		r, ok := st.Records[id]
+		if !ok {
+			return ErrUnknownID
+		}
+		if r.Status == statusResolved {
+			return ErrAlreadyResolved
+		}
+		if !opts.Force {
+			if subtle.ConstantTimeCompare([]byte(ownerToken), []byte(r.OwnerToken)) != 1 {
+				return ErrNotOwner
+			}
+		}
+		now := time.Now().UTC()
+		r.Status = statusResolved
+		r.ResolvedAt = &now
+		st.Records[id] = r // map-of-structs: must re-assign.
+		return nil
+	})
 }
 
-// Get is a stub wired in Task 1.4.
+// Get returns the Record with the given id under LOCK_SH. Returns
+// ErrUnknownID if absent.
 func (s *Store) Get(id string) (Record, error) {
-	_ = id
-	return Record{}, errors.New("store: not implemented")
+	var out Record
+	err := s.withSharedLock(func(st *state) error {
+		r, ok := st.Records[id]
+		if !ok {
+			return ErrUnknownID
+		}
+		out = recordToRecord(r)
+		return nil
+	})
+	return out, err
 }
 
-// List is a stub wired in Task 1.4.
+// List returns all Records under LOCK_SH. Order is unspecified (map
+// iteration). Empty slice on no records; nil error on missing state
+// file.
 func (s *Store) List() ([]Record, error) {
-	return nil, errors.New("store: not implemented")
+	var out []Record
+	err := s.withSharedLock(func(st *state) error {
+		out = make([]Record, 0, len(st.Records))
+		for _, r := range st.Records {
+			out = append(out, recordToRecord(r))
+		}
+		return nil
+	})
+	return out, err
 }
 
-// Purge is a stub wired in Task 1.4.
+// Purge removes records per opts. Exactly one of opts.ID / opts.All /
+// opts.Resolved must be set — zero or multiple targets both return
+// ErrPurgeArgRequired. Counter is NEVER decremented; ID allocation is
+// monotonic across the lifetime of the state file (CORE-09, Pitfall 8).
 func (s *Store) Purge(opts PurgeOptions) (int, error) {
-	_ = opts
-	return 0, errors.New("store: not implemented")
+	// Count truthy targets. Exactly one must be set.
+	targets := 0
+	if opts.ID != "" {
+		targets++
+	}
+	if opts.All {
+		targets++
+	}
+	if opts.Resolved {
+		targets++
+	}
+	if targets != 1 {
+		return 0, ErrPurgeArgRequired
+	}
+
+	var removed int
+	err := s.withLockedState(func(st *state) error {
+		switch {
+		case opts.ID != "":
+			if _, ok := st.Records[opts.ID]; !ok {
+				return ErrUnknownID
+			}
+			delete(st.Records, opts.ID)
+			removed = 1
+		case opts.All:
+			removed = len(st.Records)
+			st.Records = map[string]record{}
+		case opts.Resolved:
+			for id, r := range st.Records {
+				if r.Status == statusResolved {
+					delete(st.Records, id)
+					removed++
+				}
+			}
+		}
+		// Counter is intentionally NOT touched (CORE-09).
+		return nil
+	})
+	if err != nil {
+		return 0, err
+	}
+	return removed, nil
 }
 
 // loadState reads and decodes state.json. Returns a fresh empty state
@@ -120,9 +225,7 @@ func loadState(path string) (*state, error) {
 
 // saveState marshals s and persists it atomically. Separated from
 // withLockedState so tests can intercept via saveStateFn.
-//
-// NOTE: writeStateAtomic lives in atomic_unix.go / atomic_windows.go.
-// This function is not called until Task 1.3 lands those files.
+// writeStateAtomic lives in atomic_unix.go / atomic_windows.go.
 func saveState(path string, s *state) error {
 	data, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
