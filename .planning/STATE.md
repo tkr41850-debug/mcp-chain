@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-23)
 
 **Core value:** N Claude Code sessions can coordinate via shared locks — register in one, any number of others wait on it, resolve when ready — with minimal overhead (fast startup, low memory, terse tool prompts, small binary).
-**Current focus:** Phase 1 — Foundation & Enforcement Gates
+**Current focus:** Phase 2 — Wordlist & ID Allocator
 
 ## Current Position
 
-Phase: 1 of 10 (Foundation & Enforcement Gates)
+Phase: 2 of 10 (Wordlist & ID Allocator)
 Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-04-23 — Roadmap created; 28 v1 requirements mapped across 10 phases
+Status: Researching
+Last activity: 2026-04-23 — Phase 1 complete (all 4 SC + 4 REQ verified); Phase 2 research dispatched
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
