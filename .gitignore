@@ -12,3 +12,6 @@ coverage.*
 .vscode/
 *.swp
 .DS_Store
+
+# Claude Code worktrees & agent transcripts
+.claude/worktrees/
