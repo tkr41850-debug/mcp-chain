@@ -25,8 +25,12 @@ if [[ -z "${EPOCHREALTIME:-}" ]]; then
   exit 2
 fi
 
+# Warm-up run — populate OS page cache so measurements aren't dominated by
+# first-invocation I/O. Discarded from the sample.
+"$BIN" --version >/dev/null 2>&1 || true
+
 declare -a TIMES_MS
-echo "measuring ${BIN} --version (${RUNS} runs):"
+echo "measuring ${BIN} --version (${RUNS} runs, 1 warm-up discarded):"
 for ((i=1; i<=RUNS; i++)); do
   START="$EPOCHREALTIME"
   "$BIN" --version >/dev/null 2>&1
