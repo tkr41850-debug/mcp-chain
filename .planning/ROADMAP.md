@@ -47,7 +47,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. The EFF short wordlist (1296 unique lowercase words) is embedded via `//go:embed` with a startup-time test asserting count and uniqueness
   2. `idgen.Allocate(0..1295)` returns `words[i]` deterministically; `Allocate(1296+)` returns a deterministic hex-suffix ID (`hex-0001`, `hex-0002`, …)
   3. A table-driven unit test covers boundary indices (0, 1, 1295, 1296, large values) with no filesystem or concurrency dependency
-**Plans**: TBD
+**Plans**: 1 plan
+  - [ ] 02-01-PLAN.md — EFF wordlist embed + pure Allocate(counter) + boundary tests (CORE-07)
 
 ### Phase 3: XDG Path Resolution
 **Goal**: The state file path is resolved per spec and its parent directory is guaranteed to exist with correct permissions, so the store layer can assume a ready writable location.
@@ -148,7 +149,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Enforcement Gates | 0/3 | Planned | - |
-| 2. Wordlist & ID Allocator | 0/TBD | Not started | - |
+| 2. Wordlist & ID Allocator | 0/1 | Planned | - |
 | 3. XDG Path Resolution | 0/TBD | Not started | - |
 | 4. Store Core, Flock & Atomic Writes | 0/TBD | Not started | - |
 | 5. MCP Server Adapter | 0/TBD | Not started | - |

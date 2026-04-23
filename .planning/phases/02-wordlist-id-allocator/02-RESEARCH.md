@@ -581,10 +581,9 @@ func TestAllocate(t *testing.T) {
 		{"last word", 1295, "zoom"},
 		{"first fallback (hex-0001)", 1296, "hex-0001"},
 		{"second fallback (hex-0002)", 1297, "hex-0002"},
-		{"fallback at hex-ffff-1", 65534, "hex-fffe"},
-		{"fallback at hex-ffff", 65535, "hex-ffff"},
-		{"boundary before widen", 66830, "hex-ffff"},     // 66830 - 1295 = 65535 = 0xffff
-		{"widen to 5 digits", 66831, "hex-10000"},         // 66831 - 1295 = 65536 = 0x10000
+		{"fallback near 4-digit max (hex-fffe)", 66829, "hex-fffe"}, // 66829 - 1295 = 65534 = 0xfffe
+		{"fallback at 4-digit max (hex-ffff)", 66830, "hex-ffff"},   // 66830 - 1295 = 65535 = 0xffff
+		{"widen to 5 digits", 66831, "hex-10000"},                    // 66831 - 1295 = 65536 = 0x10000
 		{"widen + 1", 66832, "hex-10001"},
 	}
 	for _, tc := range tests {
@@ -669,29 +668,21 @@ Format characteristics (all verified by `awk`/`grep`/`wc` on the downloaded file
 | A4 | `wordlistSize = 1296` is a load-bearing const; EFF is extremely unlikely to re-release the short wordlist with a different count. | wordlist.go | Very low — EFF has not changed this file since 2016-09-08. If they ever do, init() panics loudly. |
 | A5 | `kong` and the rest of Phase 1 do not pre-import `idgen`; there is no danger of a circular import. | Architecture | Very low — `internal/idgen` has no dependencies on `internal/cli` or `cmd/mcp-chain`. Dependency arrow is one-way. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **NOTICE file vs in-file attribution for CC-BY 4.0.**
    - What we know: EFF content is CC-BY 4.0; attribution is required.
-   - What's unclear: Whether the attribution belongs in `wordlist.go` (simplest), in a top-level
-     `NOTICE` file (conventional for Go projects), or in the `README.md` (deferred to Phase 10).
-   - Recommendation: Put a comment at the top of `wordlist.go` for Phase 2; add a `NOTICE` file
-     (or `THIRD_PARTY_LICENSES.md`) in Phase 10 alongside the main `LICENSE`. Note in the Phase 2
-     plan handoff that this is a Phase 10 follow-up.
+   - RESOLVED: Put a comment block at the top of `wordlist.go` for Phase 2 citing the upstream
+     URL and the CC-BY 4.0 license. Top-level `NOTICE` / `THIRD_PARTY_LICENSES.md` lands in
+     Phase 10 alongside the main `LICENSE`. Planner should flag the Phase 10 follow-up.
 
 2. **Should the `wordlistSize = 1296` constant be exported?**
-   - What we know: The store layer (Phase 4) will want to know the boundary to format log
-     messages ("falling back to hex after 1296 registrations").
-   - What's unclear: Whether Phase 4 benefits from knowing the number, or whether the opaque
-     `Allocate` is enough.
-   - Recommendation: Start unexported. If Phase 4 research asks for it, export with a
-     godoc-line as `WordlistSize`. YAGNI until then.
+   - RESOLVED: Unexported for Phase 2 (YAGNI). Phase 4 research can request export if it proves
+     useful for log messages; exporting later is a trivial, non-breaking change.
 
 3. **Should `Allocate` accept `int` or `uint64`?**
-   - What we know: CONTEXT.md locks in `uint64`.
-   - What's unclear: Whether `int` would be easier downstream (map keys, JSON marshalling).
-   - Recommendation: Stick with `uint64` per the locked decision. Matches a monotonic counter
-     semantically (never negative, never shrinks).
+   - RESOLVED: `uint64` per the CONTEXT.md lock. Matches the store's monotonic counter semantics
+     (never negative, never shrinks) and avoids 32-bit int concerns on legacy platforms.
 
 ## Environment Availability
 
@@ -721,7 +712,7 @@ Format characteristics (all verified by `awk`/`grep`/`wc` on the downloaded file
 |--------|----------|-----------|-------------------|-------------|
 | CORE-07 (wordlist count / uniqueness / charset) | `init()` parse asserts 1296 unique [a-z-]+ words, plus a reassertion at test time | unit | `go test ./internal/idgen/ -run TestWordlistInvariants -v` | ❌ Wave 0 |
 | CORE-07 (wordlist content pins) | First word is `acid`, last is `zoom` | unit | `go test ./internal/idgen/ -run TestWordlistBoundaries -v` | ❌ Wave 0 |
-| CORE-07 (`Allocate` determinism across boundaries) | Table-driven: counters 0, 1, 1295, 1296, 1297, 65534, 65535, 66830, 66831, 66832 map to the documented IDs | unit | `go test ./internal/idgen/ -run TestAllocate -v` | ❌ Wave 0 |
+| CORE-07 (`Allocate` determinism across boundaries) | Table-driven: counters 0, 1, 1295, 1296, 1297, 66829, 66830, 66831, 66832 map to the documented IDs | unit | `go test ./internal/idgen/ -run TestAllocate -v` | ❌ Wave 0 |
 | CORE-07 (no alias at wordlist/hex handoff) | Monotonic uniqueness over counters [1290, 1310] | unit | `go test ./internal/idgen/ -run TestAllocateMonotonicUniqueOverBoundary -v` | ❌ Wave 0 |
 
 ### Sampling Rate
