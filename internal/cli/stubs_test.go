@@ -3,6 +3,7 @@ package cli_test
 import (
 	"bytes"
 	"os/exec"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -31,6 +32,9 @@ func buildBinary(t *testing.T) string {
 	t.Helper()
 	tmp := t.TempDir()
 	binPath := tmp + "/mcp-chain"
+	if runtime.GOOS == "windows" {
+		binPath += ".exe"
+	}
 	build := exec.Command("go", "build", "-o", binPath, "../../cmd/mcp-chain")
 	var stderr bytes.Buffer
 	build.Stderr = &stderr
