@@ -22,7 +22,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### MCP Server
 
-- [ ] **MCP-01**: Use `github.com/modelcontextprotocol/go-sdk` v1.5+ with `StdioTransport`. No HTTP transport. No `net/http` import path allowed (enforce via CI size check)
+- [ ] **MCP-01**: Use `github.com/modelcontextprotocol/go-sdk` v1.5+ with `StdioTransport`. No HTTP transport or listener in our code. `net/http` MUST NOT appear in `internal/**` or `cmd/**` source (the SDK transitively imports net/http via its SSE/streamable files — unavoidable without forking; accepted on 2026-04-24 after Phase 5 deviation). Stripped binary ≤ 15 MB enforced as the real size gate (CI in Phase 9).
 - [ ] **MCP-02**: Strict stdout discipline — only JSON-RPC traffic on stdout. All logging goes to stderr via stdlib `log/slog`. No dep that logs to stdout
 - [ ] **MCP-03**: MCP server layer is a thin adapter over `internal/store`; no MCP types leak into core logic (hexagonal boundary)
 

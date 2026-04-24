@@ -543,22 +543,15 @@ Planner: the "capture id from register response" step parses `result.content[0].
 | A4 | Protocol version string in `initialize` does not need to be hardcoded in our code | Pattern 2 | SDK owns handshake. If wrong, add `ProtocolVersion` to `Implementation` or `ServerOptions`. Verify by running the integration test against a known-good client. |
 | A5 | Token-budget measurement via byte-length proxy (`len(desc)/4 ≤ 40`) is acceptable for CI | §7 | If the proxy over/under-estimates real tokens, Phase 9 CI may pass descriptions that actually violate CORE-10. Acceptable first-pass; refine in Phase 9 if needed. |
 
-## Open Questions
+## Open Questions — RESOLVED 2026-04-24
 
-1. **In-memory transport availability for unit tests**
-   - What we know: SDK exposes `StdioTransport` and `CommandTransport` on its public surface. README shows only these two.
-   - What's unclear: Whether `mcp.NewInMemoryTransports()` or similar exists for paired in-process client/server testing.
-   - Recommendation: Planner opens `pkg.go.dev/github.com/modelcontextprotocol/go-sdk/mcp` and grep for `Memory`/`Loopback`/`Pipe` during Wave 0. If present, use it in `server_test.go`. If absent, use direct handler unit tests and rely on `integration_test.go` for the full-stack path. Either way, phase delivery is not blocked.
+All 3 resolved by orchestrator in autonomous mode. Planner should treat as locked.
 
-2. **Handler concurrency model**
-   - What we know: Store is process-safe and goroutine-safe.
-   - What's unclear: Does v1.5 `Server.Run` dispatch handlers serially or concurrently on a single session?
-   - Recommendation: Test both modes. Since store is safe either way, the correctness doesn't hinge on this, but test assertions must not assume strict ordering across concurrent calls. Document in VALIDATION.md.
+1. **In-memory transport for unit tests.** ✅ RESOLVED: probe SDK during Wave 1. If `mcp.NewInMemoryTransports()` (or similar Loopback/Pipe helper) exists, use it in `server_test.go` for handler roundtrips. If absent, fall back to direct handler unit tests (invoke `registerHandler`/`resolveHandler` functions directly with synthesized `*mcp.CallToolRequest`) and rely on `integration_test.go` for the full-stack path. Planner must probe before drafting Wave 2 test scaffolding.
 
-3. **`ErrSchemaVersion` wire routing**
-   - What we know: CONTEXT floats two options — tool-result error vs. protocol-level error.
-   - What's unclear: Product preference.
-   - Recommendation: Default to tool-result error (code `"schema_error"`) so the session stays alive. Operator sees stderr log. If the user feels strongly, flip to protocol error in a future phase; it's a one-line change.
+2. **Handler concurrency model.** ✅ RESOLVED: do not assume ordering. Test assertions must not rely on strict sequencing across concurrent calls. Store is goroutine-safe (Phase 4 `sync.Mutex` + flock) so correctness holds either way.
+
+3. **`ErrSchemaVersion` wire routing.** ✅ RESOLVED: tool-result error with `code: "schema_error"`. Keeps the session alive; operator sees details via stderr slog. Easy one-line flip later if product needs protocol-level abort.
 
 ## Environment Availability
 

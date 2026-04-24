@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Wordlist & ID Allocator** - EFF wordlist embed + deterministic ID allocator with hex fallback
 - [x] **Phase 3: XDG Path Resolution** - State file path resolution with XDG compliance and directory permissions (completed 2026-04-23)
 - [x] **Phase 4: Store Core, Flock & Atomic Writes** - Flock-protected JSON store with atomic RMW, schema versioning, and OwnerToken session-link (completed 2026-04-23)
-- [ ] **Phase 5: MCP Server Adapter** - MCP stdio server with register/resolve tools and terse descriptions
+- [x] **Phase 5: MCP Server Adapter** - MCP stdio server with register/resolve tools and terse descriptions (completed 2026-04-24)
 - [ ] **Phase 6: CLI Dispatch & Status Subcommand** - kong-based argv dispatch with the status subcommand (shared-lock reads, exit codes 0/1/2)
 - [ ] **Phase 7: CLI Formatters (list, purge, resolve)** - Table formatter and administrative subcommands over the shared store
 - [ ] **Phase 8: Plugin Packaging & Bash Monitor** - Claude Code plugin manifest, slash commands, and chain-wait.sh poll helper
