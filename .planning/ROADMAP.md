@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 7: CLI Formatters (list, purge, resolve)** - Table formatter and administrative subcommands over the shared store (completed 2026-04-24)
 - [x] **Phase 8: Plugin Packaging & Bash Monitor** - Claude Code plugin manifest, slash commands, and chain-wait.sh poll helper (completed 2026-04-24)
 - [x] **Phase 9: CI Release, Cross-compile & Test Gates** - GoReleaser cross-compile matrix, race gate, comprehensive unit + integration suites (completed 2026-04-24)
-- [ ] **Phase 10: Docs & Dogfooding Polish** - README (install, usage, why) and dogfooding-driven polish
+- [x] **Phase 10: Docs & Dogfooding Polish** - README (install, usage, why) and dogfooding-driven polish (plan 01 complete 2026-04-24; pending human v0.1.0 tag push)
 
 ## Phase Details
 
@@ -139,7 +139,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. `README.md` covers why the tool exists, plugin install + manual install steps, usage examples for `/chain-reg`, `/chain-wait`, `/chain-list`, `/chain-purge`, and manual CLI usage of `status`/`list`/`purge`/`resolve`
   2. State-file path and the NFS / networked-filesystem caveat are documented; the upgrade/reload step for Claude Code (`/mcp` list → restart) appears in the install section
   3. A dogfooding pass (register in one session, wait from another, resolve, verify `continue`) runs successfully end-to-end on Linux and macOS before the first tagged release
-**Plans**: TBD
+**Plans**: 1 plan (1 complete, 0 remaining)
+  - [x] 10-01-PLAN.md — README.md + scripts/dogfood.sh + DOGFOOD.md manual checklist + smoke-chain-wait.sh PATH guard + REQUIREMENTS.md prose swap (DIST-04, CMD-01..04 prose, HELPER-01 path) — SUMMARY: 10-01-SUMMARY.md
 
 ## Progress
 
@@ -162,4 +163,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 7. CLI Formatters (list, purge, resolve) | 1/1 | Complete   | 2026-04-24 |
 | 8. Plugin Packaging & Bash Monitor | 1/1 | Complete   | 2026-04-24 |
 | 9. CI Release, Cross-compile & Test Gates | 1/1 | Complete   | 2026-04-24 |
-| 10. Docs & Dogfooding Polish | 0/TBD | Not started | - |
+| 10. Docs & Dogfooding Polish | 1/1 | Complete (pending v0.1.0 tag push) | 2026-04-24 |

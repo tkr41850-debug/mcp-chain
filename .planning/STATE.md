@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-04-23)
 
 ## Current Position
 
-Phase: 10 of 10 (Docs & Dogfooding Polish) — IN PROGRESS
-Plan: CONTEXT captured, planning next
-Status: Phase 9 closed (WR-01/WR-02 fixed in 0fdddd5); Phase 10 CONTEXT auto-mode (7 areas resolved)
-Last activity: 2026-04-24 — Phase 9 Plan 01 complete: GoReleaser v2 config (6-arch darwin/linux/windows × amd64/arm64) + tag-driven release workflow + 3-OS CI matrix with -race on ubuntu+macos and non-race on windows + release dry-run job + golangci-lint v2.11.4 pinned with errcheck/forbidigo/gofmt/govet/staticcheck + TestConcurrentWaiters_AllSeeResolve + TestStatus_PurgedMidPoll_Exit1 (QA-02 gap-fill, -race -count=5 green) + Makefile release-snapshot+ci-local targets; codebase-wide errcheck/shadow/S1016 cleanup (21 Fprint sites, 2 shadow, 4 ResolveIn); 6 atomic commits (a10508e → fddb006); snapshot build produced 4 tar.gz + 2 zip + checksums.txt; binary 7.41 MB / startup P95 38.4 ms / stdout 0 bytes; ldflags version injection verified (`mcp-chain 0.0.1-snapshot-none`); 3 deviations auto-fixed (N-1 go.mod 1.25 stays, N-2 gofmt→formatters block, N-3 sub-process env propagation) + 1 codebase cleanup batch (N-4)
+Phase: 10 of 10 (Docs & Dogfooding Polish) — Plan 01 COMPLETE (pending human v0.1.0 tag push)
+Plan: 10-01-PLAN.md complete 2026-04-24 (5 atomic commits); Task 7 checkpoint = human DOGFOOD.md walk + git tag v0.1.0
+Status: All 10 phases code-complete; v0.1.0 release gated on human manual dogfood + tag push
+Last activity: 2026-04-24 — Phase 10 Plan 01 complete: README.md at repo root (DIST-04, 181 lines, 7 /mcp-chain: command refs, 11 D-01 sections in order) + scripts/dogfood.sh CLI-only end-to-end smoke (exit 0 in ~2s, build→unknown(1)→seed→pending(2)→resolve --force→resolved(0)→list→purge --all→list empty) + .planning/phases/10-docs-dogfooding/DOGFOOD.md 15-step 2-session manual checklist (Linux+macOS cols, step 7 exercises MCP resolve not --force, macOS deferral escape hatch per D-10) + scripts/smoke-chain-wait.sh PATH guard (exit 127 with readable stderr on missing go) + REQUIREMENTS.md prose swap (/chain-*→/mcp-chain:* across CMD-01..04/DIST-04 + HELPER-01 path scripts/chain-wait.sh→plugin/scripts/chain-wait.sh + MCP-01 net/http note preserved); 5 atomic commits (3620728 → c1de99a); make ci-local green (lint 0 issues, size 7.41 MB, startup P95 40.4 ms, stdout 0 bytes, 8-pkg -race test pass); 3 deviations auto-fixed/documented (sed-ordering bug in HELPER-01 path restored manually; 2 plan-verify over-broad regexes for filename-vs-command and POSIX bracket vs [[ test construct — documented, no code change needed)
 
-Progress: [█████████░] 90%
+Progress: [██████████] 100% (code-complete; v0.1.0 tag is human gate)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: ~26 min (executor time only)
-- Total execution time: ~225 min (Phase 9 skewed by goreleaser install + windows/arm64 TLS compile)
+- Total plans completed: 9
+- Average duration: ~25 min (executor time only)
+- Total execution time: ~250 min (Phase 9 skewed by goreleaser install + windows/arm64 TLS compile)
 
 **By Phase:**
 
@@ -35,10 +35,11 @@ Progress: [█████████░] 90%
 | 07 | 1 | ~30 min | ~30 min |
 | 08 | 1 | ~40 min + inline resume | ~40 min |
 | 09 | 1 | ~95 min (inc. 30-min goreleaser install + 32-min snapshot build) | ~95 min |
+| 10 | 1 | ~25 min | ~25 min |
 
 **Recent Trend:**
-- Last 8 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min), 07-01 (30 min), 08-01 (40 min + inline resume), 09-01 (95 min)
-- Trend: ↑ (release-infrastructure phase dominated by toolchain install + cross-compile time; task-scope work itself ~20 min)
+- Last 9 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min), 07-01 (30 min), 08-01 (40 min + inline resume), 09-01 (95 min), 10-01 (25 min)
+- Trend: ↓ (back to docs-phase baseline after Phase 9 release-infra spike)
 
 *Updated after each plan completion*
 
@@ -78,6 +79,9 @@ Recent decisions affecting current work (from research synthesis 2026-04-23):
 - Phase 9 integration tests (N-3): sub-process helpers spawning `resolve --force` / `purge` from parent Go test MUST propagate `XDG_STATE_HOME` via explicit `cmd.Env = env` — inheriting from os.Environ is NOT enough because `t.Setenv` doesn't flow to spawned children
 - Phase 9 known pre-existing (out of scope): SDK v1.5.0 unconditionally imports `net/http` in mcp/{event,streamable,sse,shared}.go — this is a regression from earlier stdio-only versions; candidate for Phase 10 SDK review if product principle "no net/http" is reasserted
 - Phase 9 known pre-existing (out of scope): `scripts/smoke-chain-wait.sh` fails in minimal shells with `go: command not found` — script relies on PATH containing Go SDK; candidate for Phase 10 dev-env docs
+- Phase 10 D-01..D-15: 15 locked decisions applied (README section order, plugin-first install, EFF word `otter` for demos, CLI-only dogfood.sh no serve race, macOS deferral escape hatch, guarded `if ! command -v` form for PATH guards, 3-bullet security notes verbatim, MCP-01 net/http not re-opened, v0.1.0 tag push = human gate). Plan 01 commits: 3620728 (REQUIREMENTS prose swap + HELPER-01 path fix) → 7da601c (smoke-chain-wait PATH guard) → 53cc6a0 (dogfood.sh) → ac1c4d2 (DOGFOOD.md) → c1de99a (README.md).
+- Phase 10 auto-fixed deviation: HELPER-01 path `plugin/scripts/chain-wait.sh` got corrupted to `plugin/scripts/mcp-chain:wait.sh` by the plan's sed sequence (the `/chain-wait→/mcp-chain:wait` swap also matched inside the newly-added path prefix). Manually restored. Plan's verify regex `grep -E '/chain-(reg|wait|list|purge)'` over-matches on the file path itself — semantic intent (no legacy *command* refs) is met; documented in Plan 01 SUMMARY.
+- Phase 10 auto-fixed deviation: dogfood.sh plan verify `grep -nE '\[\['` flags POSIX bracket expression `[[:space:]]` inside a grep regex as a bash `[[ ... ]]` test construct. They are different; the script is bash 3.2–safe. Verified via stricter regex targeting only the test-construct form. No file change.
 
 ### Pending Todos
 
@@ -96,5 +100,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-24
-Stopped at: Phase 10 CONTEXT captured (auto-mode) — 15 locked decisions across 7 gray areas; scope = README at repo root + CMD-01..04 namespace prose update + scripts/dogfood.sh + DOGFOOD.md 2-session checklist + smoke-chain-wait.sh PATH guard + README security notes (Phase 8 WR-02 inherit) + first tag v0.1.0; MCP-01 `net/http` regression NOT re-opened. Phase 9 close-out: WR-01 (integration-tagged tests now in CI matrix) + WR-02 (windows .exe suffix) fixed in 0fdddd5.
-Resume file: .planning/phases/10-docs-dogfooding/10-CONTEXT.md
+Stopped at: Phase 10 Plan 01 complete (5 atomic commits: 3620728 REQUIREMENTS prose swap → 7da601c smoke PATH guard → 53cc6a0 dogfood.sh → ac1c4d2 DOGFOOD.md → c1de99a README). Task 6 verification green (ci-local + both smokes). Task 7 = human gate: (1) walk DOGFOOD.md Linux column on a real machine, (2) decide macOS green-or-deferred per D-10, (3) `git tag v0.1.0 && git push origin v0.1.0` — executor intentionally did NOT push.
+Resume file: .planning/phases/10-docs-dogfooding/10-01-SUMMARY.md + .planning/phases/10-docs-dogfooding/DOGFOOD.md (walk this before tagging)

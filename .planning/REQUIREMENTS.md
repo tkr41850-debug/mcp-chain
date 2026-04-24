@@ -44,7 +44,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DIST-01**: Packaged as a Claude Code plugin — `plugin.json` manifest, `commands/*.md` slash commands, `.mcp.json` referencing `${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain serve`. Installable via `/plugin install <github-repo>` with zero additional config
 - [x] **DIST-02**: GitHub Actions CI via GoReleaser — on push/PR runs `go test -race ./...` and `go build`; on tag (`v*`) cross-compiles `linux/darwin/windows` × `amd64/arm64`, generates checksums, attaches binaries to the GitHub release
 - [ ] **DIST-03**: CI size gate — fail build if binary exceeds 15MB stripped (`-ldflags="-s -w"`). Fail startup-time smoke test if binary takes >100ms to print `--version`
-- [ ] **DIST-04**: Brief `README.md` covering why it exists, install steps (plugin install + manual install), usage examples for `/mcp-chain:reg`, `/mcp-chain:wait`, `/mcp-chain:list`, `/mcp-chain:purge`, and manual CLI usage
+- [x] **DIST-04**: Brief `README.md` covering why it exists, install steps (plugin install + manual install), usage examples for `/mcp-chain:reg`, `/mcp-chain:wait`, `/mcp-chain:list`, `/mcp-chain:purge`, and manual CLI usage
 
 ### Quality & Testing
 
@@ -120,7 +120,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DIST-01 | Phase 8 | Pending |
 | DIST-02 | Phase 9 | Complete |
 | DIST-03 | Phase 1 | Pending |
-| DIST-04 | Phase 10 | Pending |
+| DIST-04 | Phase 10 | Complete |
 | QA-01 | Phase 9 | Complete |
 | QA-02 | Phase 9 | Complete |
 | QA-03 | Phase 9 | Complete |
