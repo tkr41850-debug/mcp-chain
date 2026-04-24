@@ -42,16 +42,16 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Distribution & Install
 
 - [ ] **DIST-01**: Packaged as a Claude Code plugin — `plugin.json` manifest, `commands/*.md` slash commands, `.mcp.json` referencing `${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain serve`. Installable via `/plugin install <github-repo>` with zero additional config
-- [ ] **DIST-02**: GitHub Actions CI via GoReleaser — on push/PR runs `go test -race ./...` and `go build`; on tag (`v*`) cross-compiles `linux/darwin/windows` × `amd64/arm64`, generates checksums, attaches binaries to the GitHub release
+- [x] **DIST-02**: GitHub Actions CI via GoReleaser — on push/PR runs `go test -race ./...` and `go build`; on tag (`v*`) cross-compiles `linux/darwin/windows` × `amd64/arm64`, generates checksums, attaches binaries to the GitHub release
 - [ ] **DIST-03**: CI size gate — fail build if binary exceeds 15MB stripped (`-ldflags="-s -w"`). Fail startup-time smoke test if binary takes >100ms to print `--version`
 - [ ] **DIST-04**: Brief `README.md` covering why it exists, install steps (plugin install + manual install), usage examples for `/chain-reg`, `/chain-wait`, `/chain-list`, `/chain-purge`, and manual CLI usage
 
 ### Quality & Testing
 
-- [ ] **QA-01**: Unit tests for all core logic — wordlist allocation determinism, counter monotonicity, hex fallback, state schema round-trip, timeout parsing, path resolution, ID lookup, state transitions (pending → resolved, double-resolve error, unknown error, OwnerToken mismatch error)
-- [ ] **QA-02**: Integration tests exercising full flows — end-to-end register → status pending → resolve → status resolved; N concurrent waiters on the same ID all see resolve; double-resolve error; unknown-ID error; purge-mid-wait error; OwnerToken mismatch error; cross-process flock safety (spawn two processes, register 100 entries each concurrently, verify no lost updates and no duplicate IDs)
-- [ ] **QA-03**: `go test -race ./...` runs in CI on every push/PR. Failing tests block merges. Also run race tests on macOS + Linux runners; Windows runs non-race test suite
-- [ ] **QA-04**: CI lint gate — `go vet` + `staticcheck` (or equivalent); non-zero exit blocks merge
+- [x] **QA-01**: Unit tests for all core logic — wordlist allocation determinism, counter monotonicity, hex fallback, state schema round-trip, timeout parsing, path resolution, ID lookup, state transitions (pending → resolved, double-resolve error, unknown error, OwnerToken mismatch error)
+- [x] **QA-02**: Integration tests exercising full flows — end-to-end register → status pending → resolve → status resolved; N concurrent waiters on the same ID all see resolve; double-resolve error; unknown-ID error; purge-mid-wait error; OwnerToken mismatch error; cross-process flock safety (spawn two processes, register 100 entries each concurrently, verify no lost updates and no duplicate IDs)
+- [x] **QA-03**: `go test -race ./...` runs in CI on every push/PR. Failing tests block merges. Also run race tests on macOS + Linux runners; Windows runs non-race test suite
+- [x] **QA-04**: CI lint gate — `go vet` + `staticcheck` (or equivalent); non-zero exit blocks merge
 
 ## v2 Requirements
 
@@ -118,13 +118,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HELPER-01 | Phase 8 | Pending |
 | HELPER-02 | Phase 8 | Pending |
 | DIST-01 | Phase 8 | Pending |
-| DIST-02 | Phase 9 | Pending |
+| DIST-02 | Phase 9 | Complete |
 | DIST-03 | Phase 1 | Pending |
 | DIST-04 | Phase 10 | Pending |
-| QA-01 | Phase 9 | Pending |
-| QA-02 | Phase 9 | Pending |
-| QA-03 | Phase 9 | Pending |
-| QA-04 | Phase 1 | Pending |
+| QA-01 | Phase 9 | Complete |
+| QA-02 | Phase 9 | Complete |
+| QA-03 | Phase 9 | Complete |
+| QA-04 | Phase 1,9 | Complete |
 
 **Coverage:**
 - v1 requirements: 28 total

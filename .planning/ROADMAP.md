@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 6: CLI Dispatch & Status Subcommand** - kong-based argv dispatch with the status subcommand (shared-lock reads, exit codes 0/1/2)
 - [x] **Phase 7: CLI Formatters (list, purge, resolve)** - Table formatter and administrative subcommands over the shared store (completed 2026-04-24)
 - [x] **Phase 8: Plugin Packaging & Bash Monitor** - Claude Code plugin manifest, slash commands, and chain-wait.sh poll helper (completed 2026-04-24)
-- [ ] **Phase 9: CI Release, Cross-compile & Test Gates** - GoReleaser cross-compile matrix, race gate, comprehensive unit + integration suites
+- [x] **Phase 9: CI Release, Cross-compile & Test Gates** - GoReleaser cross-compile matrix, race gate, comprehensive unit + integration suites (completed 2026-04-24)
 - [ ] **Phase 10: Docs & Dogfooding Polish** - README (install, usage, why) and dogfooding-driven polish
 
 ## Phase Details
@@ -128,7 +128,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Tagging `v*` triggers GoReleaser to cross-compile `linux/darwin/windows × amd64/arm64`, strip with `-s -w -trimpath`, attach all six archives plus `checksums.txt` to the GitHub release, and embed the tag in `--version` (not a dirty SHA)
   3. Unit suite covers wordlist allocation determinism, counter monotonicity, hex fallback, state schema round-trip, timeout parsing, path resolution, ID lookup, and every state transition (pending → resolved, double-resolve, unknown, OwnerToken mismatch)
   4. Integration suite covers end-to-end register → status pending → resolve → status resolved, N concurrent waiters, double-resolve + unknown-ID + purge-mid-wait + OwnerToken-mismatch errors, and two-process cross-flock safety with 100 entries per process with zero lost updates
-**Plans**: TBD
+**Plans**: 1 plan (1 complete, 0 remaining)
+  - [x] 09-01-PLAN.md — GoReleaser v2 config + tag-driven release workflow + 3-OS CI matrix (-race on linux+macos, non-race windows) + release dry-run + golangci-lint v2.11.4 pinned + TestConcurrentWaiters_AllSeeResolve + TestStatus_PurgedMidPoll_Exit1 + Makefile release-snapshot/ci-local (DIST-02, QA-01, QA-02, QA-03, QA-04) — SUMMARY: 09-01-SUMMARY.md
 
 ### Phase 10: Docs & Dogfooding Polish
 **Goal**: A brief, accurate `README.md` lets a new user install and use mcp-chain from either the plugin or manual paths, and dogfooding the end-to-end flow has surfaced and fixed any small polish items.
@@ -160,5 +161,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. CLI Dispatch & Status Subcommand | 0/TBD | Not started | - |
 | 7. CLI Formatters (list, purge, resolve) | 1/1 | Complete   | 2026-04-24 |
 | 8. Plugin Packaging & Bash Monitor | 1/1 | Complete   | 2026-04-24 |
-| 9. CI Release, Cross-compile & Test Gates | 0/TBD | Not started | - |
+| 9. CI Release, Cross-compile & Test Gates | 1/1 | Complete   | 2026-04-24 |
 | 10. Docs & Dogfooding Polish | 0/TBD | Not started | - |

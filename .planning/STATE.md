@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-04-23)
 
 ## Current Position
 
-Phase: 9 of 10 (CI Release, Cross-compile & Test Gates) — IN PROGRESS
-Plan: CONTEXT captured; planning next
-Status: Phase 9 context gathered (--auto); advancing to plan-phase
-Last activity: 2026-04-24 — Phase 8 Plan 01 complete: plugin manifests (plugin.json, marketplace.json, .mcp.json) + 4 slash-command prompts (reg/wait/list/purge, ≤30 words each) + chain-wait.sh bash 3.2 monitor + 5 shell gates + E2E smoke harness; WR-01 OWNER placeholder fixed; review 0 HI/1 ME (WR-02 $ARGUMENTS norm, deferred to Phase 10 docs); verifier 4/4 SC PASS; go.mod/go.sum byte-identical; stripped binary 7.82 MB
+Phase: 9 of 10 (CI Release, Cross-compile & Test Gates) — COMPLETE
+Plan: 01 executed (7 tasks implemented + T-01 no-op + T-09 verification)
+Status: Phase 9 Plan 01 complete; ready for Phase 10 (Docs + 1.0 release)
+Last activity: 2026-04-24 — Phase 9 Plan 01 complete: GoReleaser v2 config (6-arch darwin/linux/windows × amd64/arm64) + tag-driven release workflow + 3-OS CI matrix with -race on ubuntu+macos and non-race on windows + release dry-run job + golangci-lint v2.11.4 pinned with errcheck/forbidigo/gofmt/govet/staticcheck + TestConcurrentWaiters_AllSeeResolve + TestStatus_PurgedMidPoll_Exit1 (QA-02 gap-fill, -race -count=5 green) + Makefile release-snapshot+ci-local targets; codebase-wide errcheck/shadow/S1016 cleanup (21 Fprint sites, 2 shadow, 4 ResolveIn); 6 atomic commits (a10508e → fddb006); snapshot build produced 4 tar.gz + 2 zip + checksums.txt; binary 7.41 MB / startup P95 38.4 ms / stdout 0 bytes; ldflags version injection verified (`mcp-chain 0.0.1-snapshot-none`); 3 deviations auto-fixed (N-1 go.mod 1.25 stays, N-2 gofmt→formatters block, N-3 sub-process env propagation) + 1 codebase cleanup batch (N-4)
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: ~16 min (executor time only)
-- Total execution time: ~130 min (plus retry overhead on phase 8 after 429 mid-execution)
+- Total plans completed: 8
+- Average duration: ~26 min (executor time only)
+- Total execution time: ~225 min (Phase 9 skewed by goreleaser install + windows/arm64 TLS compile)
 
 **By Phase:**
 
@@ -34,10 +34,11 @@ Progress: [████████░░] 80%
 | 06 | 1 | ~20 min | ~20 min |
 | 07 | 1 | ~30 min | ~30 min |
 | 08 | 1 | ~40 min + inline resume | ~40 min |
+| 09 | 1 | ~95 min (inc. 30-min goreleaser install + 32-min snapshot build) | ~95 min |
 
 **Recent Trend:**
-- Last 7 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min), 07-01 (30 min), 08-01 (40 min + inline resume after 429)
-- Trend: ↑ (multi-artifact phases — plugin tree + shell gates + Go tests + E2E smoke)
+- Last 8 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min), 07-01 (30 min), 08-01 (40 min + inline resume), 09-01 (95 min)
+- Trend: ↑ (release-infrastructure phase dominated by toolchain install + cross-compile time; task-scope work itself ~20 min)
 
 *Updated after each plan completion*
 
@@ -70,6 +71,13 @@ Recent decisions affecting current work (from research synthesis 2026-04-23):
 - chain-wait.sh (Phase 8, LD-5/6/7): POSIX bash 3.2-safe; translates Phase 6 exit codes 0→`echo continue && exit 0`, 2→`sleep 1` loop, 1|127|*→stderr+exit 1; `--timeout DURATION` accepts exactly `{N}s|{N}m|{N}h` with 604800s (168h) clamp; exit 124 on timeout per `timeout(1)` convention
 - chain-wait.sh (Phase 8, LD-9): binary path resolved via `${MCP_CHAIN_BIN:-mcp-chain}` — env override enables test isolation without modifying PATH
 - Phase 8 known unfixed: WR-02 `$ARGUMENTS` shell-injection surface in wait.md/purge.md prompt templates — documented as Claude Code ecosystem norm (trusted slash-command invocation); Phase 10 README to note
+- Phase 9 Go directive (N-1): go.mod stays at `go 1.25.0` — SDK v1.5.0 requires it; CI uses `go-version: "1.25"`, release workflow uses `go-version-file: go.mod` (single source of truth)
+- Phase 9 lint config (N-2): golangci-lint v2 requires gofmt in top-level `formatters:` block (not `linters:`); v2.11.4 pinned in both .golangci.yml and golangci-lint-action@v8
+- Phase 9 release pin: `goreleaser-action@v6` uses `~> v2` version constraint (allows 2.x minor bumps, blocks v3 surprise); `golangci-lint-action@v8` uses explicit `version: v2.11.4` (patch-pin because linter rules shift)
+- Phase 9 CI matrix: fail-fast: false on 3-OS test matrix; -race enabled on ubuntu-latest + macos-latest (Go race detector unsupported on Windows → plain `-count=1` there)
+- Phase 9 integration tests (N-3): sub-process helpers spawning `resolve --force` / `purge` from parent Go test MUST propagate `XDG_STATE_HOME` via explicit `cmd.Env = env` — inheriting from os.Environ is NOT enough because `t.Setenv` doesn't flow to spawned children
+- Phase 9 known pre-existing (out of scope): SDK v1.5.0 unconditionally imports `net/http` in mcp/{event,streamable,sse,shared}.go — this is a regression from earlier stdio-only versions; candidate for Phase 10 SDK review if product principle "no net/http" is reasserted
+- Phase 9 known pre-existing (out of scope): `scripts/smoke-chain-wait.sh` fails in minimal shells with `go: command not found` — script relies on PATH containing Go SDK; candidate for Phase 10 dev-env docs
 
 ### Pending Todos
 
@@ -88,5 +96,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-24
-Stopped at: Phase 7 Plan 01 complete — `internal/cli/format/WriteTable` (text/tabwriter) + list/purge/resolve commands wired; 6 atomic commits (7c11b88 → bc8b0b5); 16 unit + 4 integration tests green under -race; `TestPurge_CounterNotDecremented` pins CORE-09 (counter never decremented on purge); review 0 HI / 0 ME / 5 LO; verifier 14/14 PASS; stripped binary 7.82 MB; CMD-03 + CMD-04 closed
-Resume file: None — ready for Phase 8 (Plugin Packaging & Bash Monitor)
+Stopped at: Phase 9 Plan 01 complete — GoReleaser v2 config + tag-driven release workflow + 3-OS CI matrix (-race on linux+macos, non-race on windows) + release-dry-run job + golangci-lint v2.11.4 pinned + TestConcurrentWaiters_AllSeeResolve + TestStatus_PurgedMidPoll_Exit1 (QA-02 close-out) + Makefile release-snapshot/ci-local; 6 atomic commits (a10508e → fddb006); snapshot build 4 tar.gz + 2 zip + checksums.txt; binary 7.41 MB / startup P95 38.4 ms / stdout 0 bytes; ldflags injection verified; DIST-02, QA-01, QA-02, QA-03, QA-04 → Complete
+Resume file: None — ready for Phase 10 (Docs + 1.0 release)
