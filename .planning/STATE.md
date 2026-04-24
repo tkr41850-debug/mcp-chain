@@ -5,7 +5,18 @@
 See: .planning/PROJECT.md (updated 2026-04-23)
 
 **Core value:** N Claude Code sessions can coordinate via shared locks — register in one, any number of others wait on it, resolve when ready — with minimal overhead (fast startup, low memory, terse tool prompts, small binary).
-**Current focus:** Phase 9 — CI Release, Cross-compile & Test Gates
+**Current focus:** v0.1.0 shipped; planning next milestone
+
+## Deferred Items
+
+Items acknowledged and deferred at v0.1.0 milestone close on 2026-04-24:
+
+| Category | Item | Status |
+|----------|------|--------|
+| verification | Phase 08 plugin install on macOS | human_needed (deferred per D-10 — no macOS runner) |
+| verification | Phase 09 first-tag GitHub Actions release | human_needed (gated on v0.1.0 push to remote) |
+| verification | Phase 10 macOS dogfood walkthrough | human_needed (deferred per D-10 — no macOS runner) |
+| context_oq | Phase 08 OQ-1/OQ-2/OQ-3 (plugin schema, frontmatter, bash 3.2 timeout) | resolved during execution but not struck through in CONTEXT.md |
 
 ## Current Position
 
