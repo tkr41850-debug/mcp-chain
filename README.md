@@ -15,14 +15,27 @@ one `flock(2)`.
 
 ### With Claude Code (recommended)
 
+mcp-chain is not an official Anthropic plugin, so Claude Code needs the
+GitHub repo registered as a marketplace source before it can resolve the
+plugin name.
+
+First, register the repo as a marketplace:
+
 ```
-/plugin install tkr41850-debug/mcp-chain
+/plugin marketplace add tkr41850-debug/mcp-chain
 ```
 
-Claude Code downloads the latest release binary for your OS/arch from GitHub
-Releases and installs it under `${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain`. No
-further wiring needed — the plugin ships its own `.mcp.json`, slash commands,
-and monitor script.
+Then install the plugin from that marketplace:
+
+```
+/plugin install mcp-chain@mcp-chain
+```
+
+The `@mcp-chain` suffix is the marketplace slug (derived from the repo
+name you just added). Claude Code downloads the latest release binary for
+your OS/arch from GitHub Releases and installs it under
+`${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain`. No further wiring needed — the
+plugin ships its own `.mcp.json`, slash commands, and monitor script.
 
 ### Without Claude Code
 
@@ -131,8 +144,10 @@ restart. If Claude Code does not list a restart option for your version,
 fully quit and relaunch Claude Code. Claude Code's plugin-reload surface has
 evolved across releases; either path reconnects the MCP server.
 
-To upgrade the plugin itself, re-run `/plugin install tkr41850-debug/mcp-chain`;
-Claude Code will fetch the latest release asset.
+To upgrade the plugin itself, re-run `/plugin install mcp-chain@mcp-chain`;
+Claude Code will fetch the latest release asset. If you haven't added the
+marketplace yet (or it was removed), re-run
+`/plugin marketplace add tkr41850-debug/mcp-chain` first.
 
 ## Security notes
 
