@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-04-23)
 
 ## Current Position
 
-Phase: 9 of 10 (CI Release, Cross-compile & Test Gates) — COMPLETE
-Plan: 01 executed (7 tasks implemented + T-01 no-op + T-09 verification)
-Status: Phase 9 Plan 01 complete; ready for Phase 10 (Docs + 1.0 release)
+Phase: 10 of 10 (Docs & Dogfooding Polish) — IN PROGRESS
+Plan: CONTEXT captured, planning next
+Status: Phase 9 closed (WR-01/WR-02 fixed in 0fdddd5); Phase 10 CONTEXT auto-mode (7 areas resolved)
 Last activity: 2026-04-24 — Phase 9 Plan 01 complete: GoReleaser v2 config (6-arch darwin/linux/windows × amd64/arm64) + tag-driven release workflow + 3-OS CI matrix with -race on ubuntu+macos and non-race on windows + release dry-run job + golangci-lint v2.11.4 pinned with errcheck/forbidigo/gofmt/govet/staticcheck + TestConcurrentWaiters_AllSeeResolve + TestStatus_PurgedMidPoll_Exit1 (QA-02 gap-fill, -race -count=5 green) + Makefile release-snapshot+ci-local targets; codebase-wide errcheck/shadow/S1016 cleanup (21 Fprint sites, 2 shadow, 4 ResolveIn); 6 atomic commits (a10508e → fddb006); snapshot build produced 4 tar.gz + 2 zip + checksums.txt; binary 7.41 MB / startup P95 38.4 ms / stdout 0 bytes; ldflags version injection verified (`mcp-chain 0.0.1-snapshot-none`); 3 deviations auto-fixed (N-1 go.mod 1.25 stays, N-2 gofmt→formatters block, N-3 sub-process env propagation) + 1 codebase cleanup batch (N-4)
 
 Progress: [█████████░] 90%
@@ -96,5 +96,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-24
-Stopped at: Phase 9 Plan 01 complete — GoReleaser v2 config + tag-driven release workflow + 3-OS CI matrix (-race on linux+macos, non-race on windows) + release-dry-run job + golangci-lint v2.11.4 pinned + TestConcurrentWaiters_AllSeeResolve + TestStatus_PurgedMidPoll_Exit1 (QA-02 close-out) + Makefile release-snapshot/ci-local; 6 atomic commits (a10508e → fddb006); snapshot build 4 tar.gz + 2 zip + checksums.txt; binary 7.41 MB / startup P95 38.4 ms / stdout 0 bytes; ldflags injection verified; DIST-02, QA-01, QA-02, QA-03, QA-04 → Complete
-Resume file: None — ready for Phase 10 (Docs + 1.0 release)
+Stopped at: Phase 10 CONTEXT captured (auto-mode) — 15 locked decisions across 7 gray areas; scope = README at repo root + CMD-01..04 namespace prose update + scripts/dogfood.sh + DOGFOOD.md 2-session checklist + smoke-chain-wait.sh PATH guard + README security notes (Phase 8 WR-02 inherit) + first tag v0.1.0; MCP-01 `net/http` regression NOT re-opened. Phase 9 close-out: WR-01 (integration-tagged tests now in CI matrix) + WR-02 (windows .exe suffix) fixed in 0fdddd5.
+Resume file: .planning/phases/10-docs-dogfooding/10-CONTEXT.md
