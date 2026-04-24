@@ -21,7 +21,8 @@ func TestStubsExitCodes(t *testing.T) {
 	}{
 		// Phase 5 wired `serve` to real logic — it no longer exits 3.
 		// Its behaviour is covered by internal/mcpserver (unit + integration).
-		{"status", []string{"status", "foo"}, 3, "not implemented (Phase 6)", true},
+		// Phase 6 wired `status` (see status.go / status_test.go / integration_test.go)
+		// so that row is no longer a stub.
 		{"list", []string{"list"}, 3, "not implemented (Phase 7)", true},
 		{"purge-all", []string{"purge", "--all"}, 3, "not implemented (Phase 7)", true},
 	}
