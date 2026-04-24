@@ -30,3 +30,29 @@ func resolveHandler(st *store.Store, ownerToken string) func(ctx context.Context
 		return nil, ResolveOut{}, nil
 	}
 }
+
+// serverName is the Implementation.Name advertised on initialize.
+const serverName = "mcp-chain"
+
+// Run builds an MCP server over StdioTransport and serves until the
+// transport's connection closes (stdin EOF) or ctx is cancelled.
+// Callers: internal/cli ServeCmd.Run. Tests: integration_test.go
+// runs this in a spawned child process.
+//
+// version is the Implementation.Version advertised to clients; callers
+// should pass cmd/mcp-chain/main.go's ldflags-injected `version` var.
+func Run(ctx context.Context, st *store.Store, ownerToken, version string) error {
+	impl := &mcp.Implementation{Name: serverName, Version: version}
+	server := mcp.NewServer(impl, nil)
+
+	mcp.AddTool(server,
+		&mcp.Tool{Name: "register", Description: registerDescription},
+		registerHandler(st, ownerToken),
+	)
+	mcp.AddTool(server,
+		&mcp.Tool{Name: "resolve", Description: resolveDescription},
+		resolveHandler(st, ownerToken),
+	)
+
+	return server.Run(ctx, &mcp.StdioTransport{})
+}

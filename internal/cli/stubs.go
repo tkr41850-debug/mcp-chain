@@ -5,8 +5,15 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/anthropics/mcp-chain/internal/mcpserver"
+	"github.com/anthropics/mcp-chain/internal/statepath"
+	"github.com/anthropics/mcp-chain/internal/store"
 )
 
 // ExitCodeNotImplemented is returned by every Phase-1 subcommand stub.
@@ -16,14 +23,36 @@ import (
 // REQUIREMENTS.md CORE-01.
 const ExitCodeNotImplemented = 3
 
+// Version is the build version string. Set by release tooling via
+// -ldflags="-X github.com/anthropics/mcp-chain/internal/cli.Version=...".
+// Used by ServeCmd to populate the MCP Implementation.Version advertised
+// on initialize. Phase 9 wires the ldflags; for now this stays "dev".
+var Version = "dev"
+
 // ServeCmd runs the MCP stdio server (Phase 5 target).
 type ServeCmd struct{}
 
-// Run is a stub. Writes to stderr (NEVER stdout) and exits 3.
+// Run starts the MCP stdio server. Resolves the state path (Phase 3),
+// opens the store (Phase 4), generates a fresh per-process OwnerToken
+// (Phase 5), then hands stdin/stdout to mcpserver.Run under a context
+// cancelled by SIGINT/SIGTERM or stdin EOF.
 func (c *ServeCmd) Run() error {
-	fmt.Fprintln(os.Stderr, "mcp-chain serve: not implemented (Phase 5)")
-	os.Exit(ExitCodeNotImplemented)
-	return nil // unreachable
+	path, err := statepath.Resolve()
+	if err != nil {
+		return fmt.Errorf("serve: resolve state path: %w", err)
+	}
+	st, err := store.Open(path)
+	if err != nil {
+		return fmt.Errorf("serve: open store: %w", err)
+	}
+	token, err := mcpserver.NewOwnerToken()
+	if err != nil {
+		return fmt.Errorf("serve: generate owner token: %w", err)
+	}
+
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
+	return mcpserver.Run(ctx, st, token, Version)
 }
 
 // StatusCmd reports the status of a registered id (Phase 6 target).

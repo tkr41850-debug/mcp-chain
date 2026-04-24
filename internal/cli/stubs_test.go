@@ -19,7 +19,8 @@ func TestStubsExitCodes(t *testing.T) {
 		wantErrContains string // substring expected in stderr
 		wantStdoutEmpty bool
 	}{
-		{"serve", []string{"serve"}, 3, "not implemented (Phase 5)", true},
+		// Phase 5 wired `serve` to real logic — it no longer exits 3.
+		// Its behaviour is covered by internal/mcpserver (unit + integration).
 		{"status", []string{"status", "foo"}, 3, "not implemented (Phase 6)", true},
 		{"list", []string{"list"}, 3, "not implemented (Phase 7)", true},
 		{"purge-all", []string{"purge", "--all"}, 3, "not implemented (Phase 7)", true},
