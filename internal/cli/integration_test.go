@@ -4,6 +4,9 @@ package cli_test
 
 import (
 	"bytes"
+	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -558,4 +561,148 @@ func TestPurge_CounterNotDecremented(t *testing.T) {
 
 	after := readCounter()
 	require.Equal(t, before, after, "CORE-09 / LD-12: Counter MUST survive purge --all")
+}
+
+// TestConcurrentWaiters_AllSeeResolve fills QA-02 bullet 2:
+// N concurrent waiters on the same id all observe the pending→resolved
+// transition. Deterministic synchronization only (D-17 zero flakiness) —
+// no time.Sleep for coordination.
+func TestConcurrentWaiters_AllSeeResolve(t *testing.T) {
+	const waiters = 10
+	const overallDeadline = 5 * time.Second
+
+	binPath := buildBinary(t)
+	dir := t.TempDir()
+
+	// Seed a pending id (no resolver yet).
+	id := seedStateForChild(t, dir, func(t *testing.T, st *store.Store) string {
+		t.Helper()
+		// Inline ownerHex: 16 bytes from crypto/rand → hex.
+		b := make([]byte, 16)
+		_, err := rand.Read(b)
+		require.NoError(t, err)
+		ownerHex := hex.EncodeToString(b)
+		id, err := st.Register(ownerHex, "waiters-condition")
+		require.NoError(t, err)
+		return id
+	})
+
+	// Shared env for all child processes.
+	env := append(os.Environ(), "XDG_STATE_HOME="+dir)
+
+	var started sync.WaitGroup
+	started.Add(waiters)
+
+	resolved := make(chan int, waiters) // poller index when it observed resolved
+	ctx, cancel := context.WithTimeout(context.Background(), overallDeadline)
+	defer cancel()
+
+	// Launch N pollers. Each loops `status <id>` at ~20ms cadence until
+	// exit 0 (resolved) or ctx deadline.
+	for i := 0; i < waiters; i++ {
+		i := i
+		go func() {
+			started.Done()
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				default:
+				}
+				cmd := exec.CommandContext(ctx, binPath, "status", id)
+				cmd.Env = env
+				_ = cmd.Run()
+				if cmd.ProcessState != nil && cmd.ProcessState.ExitCode() == 0 {
+					resolved <- i
+					return
+				}
+				// brief yield — NOT synchronization, just CPU politeness
+				time.Sleep(20 * time.Millisecond)
+			}
+		}()
+	}
+
+	// Wait until all N pollers have at least entered their loop.
+	started.Wait()
+
+	// Trigger resolve via the force escape hatch (parent process is not the owner).
+	resolveCmd := exec.CommandContext(ctx, binPath, "resolve", id, "--force")
+	resolveCmd.Env = env
+	out, err := resolveCmd.CombinedOutput()
+	require.NoError(t, err, "resolve --force failed: %s", string(out))
+
+	// Expect every poller to observe resolved within overallDeadline.
+	seen := make(map[int]bool, waiters)
+	for len(seen) < waiters {
+		select {
+		case i := <-resolved:
+			seen[i] = true
+		case <-ctx.Done():
+			t.Fatalf("deadline exceeded: %d/%d pollers observed resolved", len(seen), waiters)
+		}
+	}
+	require.Equal(t, waiters, len(seen))
+}
+
+// TestStatus_PurgedMidPoll_Exit1 fills QA-02 bullet 5:
+// When an id is purged between status polls, the next status call must
+// exit 1 (unknown). Covers the failure mode the Phase 8 bash monitor
+// relies on for mid-wait purge detection.
+func TestStatus_PurgedMidPoll_Exit1(t *testing.T) {
+	const overallDeadline = 5 * time.Second
+
+	binPath := buildBinary(t)
+	dir := t.TempDir()
+
+	// Seed a pending id.
+	id := seedStateForChild(t, dir, func(t *testing.T, st *store.Store) string {
+		t.Helper()
+		// Inline ownerHex: 16 bytes from crypto/rand → hex.
+		b := make([]byte, 16)
+		_, err := rand.Read(b)
+		require.NoError(t, err)
+		ownerHex := hex.EncodeToString(b)
+		id, err := st.Register(ownerHex, "purge-mid-poll")
+		require.NoError(t, err)
+		return id
+	})
+
+	env := append(os.Environ(), "XDG_STATE_HOME="+dir)
+	ctx, cancel := context.WithTimeout(context.Background(), overallDeadline)
+	defer cancel()
+
+	saw1 := make(chan struct{}, 1)
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+			cmd := exec.CommandContext(ctx, binPath, "status", id)
+			cmd.Env = env
+			_ = cmd.Run()
+			if cmd.ProcessState != nil && cmd.ProcessState.ExitCode() == 1 {
+				select {
+				case saw1 <- struct{}{}:
+				default:
+				}
+				return
+			}
+			time.Sleep(20 * time.Millisecond)
+		}
+	}()
+
+	// Purge the id from the parent.
+	purgeCmd := exec.CommandContext(ctx, binPath, "purge", id)
+	purgeCmd.Env = env
+	out, err := purgeCmd.CombinedOutput()
+	require.NoError(t, err, "purge failed: %s", string(out))
+
+	select {
+	case <-saw1:
+		// success — poller observed exit 1 after purge
+	case <-ctx.Done():
+		t.Fatalf("deadline exceeded: poller did not observe exit 1 after purge")
+	}
 }
