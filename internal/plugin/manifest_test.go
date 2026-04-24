@@ -85,8 +85,8 @@ func TestMcpJSON_Valid(t *testing.T) {
 	raw := readJSON(t, path, &m)
 	entry, ok := m.McpServers["mcp-chain"]
 	require.True(t, ok, "mcpServers must contain key 'mcp-chain'")
-	require.Equal(t, "${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain", entry.Command,
-		"literal ${CLAUDE_PLUGIN_ROOT} — Claude Code substitutes at spawn time (LD-2)")
+	require.Equal(t, "${CLAUDE_PLUGIN_ROOT}/scripts/mcp-chain-exec.sh", entry.Command,
+		"wrapper self-installs the release binary into ${CLAUDE_PLUGIN_DATA} on first use")
 	require.Equal(t, []string{"serve"}, entry.Args)
 
 	// DIST-01 reject-list: no absolute paths, no npm/uvx/node/python shims.
@@ -158,7 +158,7 @@ func TestPromptList_InvokesBinaryList(t *testing.T) {
 	raw := readPrompt(t, "list.md")
 	body := stripFrontmatter(raw)
 	require.LessOrEqual(t, countWords(body), 30)
-	require.Contains(t, body, "${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain")
+	require.Contains(t, body, "${CLAUDE_PLUGIN_ROOT}/scripts/mcp-chain-exec.sh")
 	require.Contains(t, body, " list")
 	require.NotContains(t, raw, "/chain-list", "no double-prefix literal (LD-14)")
 }

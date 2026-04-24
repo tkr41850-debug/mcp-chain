@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "mcp-chain": {
-      "command": "${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain",
+      "command": "${CLAUDE_PLUGIN_ROOT}/scripts/mcp-chain-exec.sh",
       "args": ["serve"]
     }
   }

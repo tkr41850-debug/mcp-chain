@@ -1,6 +1,6 @@
 {
   "name": "mcp-chain",
-  "version": "1.0.0",
+  "version": "0.1.0-rc.1",
   "description": "Register/wait/resolve coordination primitive across N Claude Code sessions.",
   "author": {
     "name": "mcp-chain contributors"

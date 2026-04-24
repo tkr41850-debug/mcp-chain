@@ -32,10 +32,19 @@ Then install the plugin from that marketplace:
 ```
 
 The `@mcp-chain` suffix is the marketplace slug (derived from the repo
-name you just added). Claude Code downloads the latest release binary for
-your OS/arch from GitHub Releases and installs it under
-`${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain`. No further wiring needed — the
-plugin ships its own `.mcp.json`, slash commands, and monitor script.
+name you just added).
+
+Claude Code plugins are source-only: `install` copies the plugin files
+into the plugin cache but does not fetch release binaries. On first
+invocation of any `/mcp-chain:*` command (and on MCP server spawn), a
+bundled wrapper script downloads the correct binary for your OS/arch
+from GitHub Releases into `${CLAUDE_PLUGIN_DATA}/bin/mcp-chain` and execs
+it. `${CLAUDE_PLUGIN_DATA}` persists across plugin upgrades, so the
+download happens once per release version. Requires `curl` (or `wget`)
+and `tar` on the PATH; Windows additionally needs `unzip`.
+
+The first call adds a few seconds of download latency; subsequent calls
+hit the cached binary (<100ms).
 
 ### Without Claude Code
 
@@ -162,10 +171,19 @@ marketplace yet (or it was removed), re-run
 
 ## Troubleshooting
 
-**`mcp-chain: command not found`** — The plugin install should put the
-binary on PATH automatically. If you installed via `go install`, confirm
-`$GOBIN` (or `$HOME/go/bin`) is on PATH. Run `mcp-chain --version` to
-verify; you should see `mcp-chain 0.1.0` or newer.
+**`mcp-chain: command not found`** — If you installed via `go install`,
+confirm `$GOBIN` (or `$HOME/go/bin`) is on PATH. Inside Claude Code, the
+binary is managed by the plugin wrapper at
+`${CLAUDE_PLUGIN_ROOT}/scripts/mcp-chain-exec.sh`, which installs to
+`${CLAUDE_PLUGIN_DATA}/bin/mcp-chain` on first use; if that script fails,
+confirm `curl` (or `wget`) and `tar` are installed and the host can reach
+`github.com/tkr41850-debug/mcp-chain/releases`.
+
+**Slash commands hang or fail silently on first call** — The wrapper
+downloads the release binary on first invocation. Check its stderr; it
+prints a one-line progress message and any curl/tar error. Re-run the
+command once the download completes; the version marker at
+`${CLAUDE_PLUGIN_DATA}/bin/.version` makes subsequent calls cache-hit.
 
 **`error: unknown id: otter`** — The ID was either never registered in this
 process's state file, or it was purged. Run `mcp-chain list` to see what's
