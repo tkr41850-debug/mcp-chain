@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"os/exec"
 	"regexp"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -65,6 +66,9 @@ func buildMain(t *testing.T) string {
 	t.Helper()
 	tmp := t.TempDir()
 	binPath := tmp + "/mcp-chain"
+	if runtime.GOOS == "windows" {
+		binPath += ".exe"
+	}
 	build := exec.Command("go", "build", "-o", binPath, ".")
 	var stderr bytes.Buffer
 	build.Stderr = &stderr

@@ -101,6 +101,10 @@ func TestMcpJSON_Valid(t *testing.T) {
 // frontmatter (between --- markers) removed. Mirrors the awk logic in
 // scripts/check-prompt-wordcount.sh.
 func stripFrontmatter(raw string) string {
+	// Tolerate CRLF checkouts on Windows (belt-and-suspenders with
+	// .gitattributes eol=lf) — otherwise line == "---" never matches and
+	// the whole file falls through to the body, inflating the word count.
+	raw = strings.ReplaceAll(raw, "\r\n", "\n")
 	lines := strings.Split(raw, "\n")
 	n := 0
 	var body []string

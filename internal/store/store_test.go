@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -110,6 +111,9 @@ func TestStore_CorruptJSONErrors(t *testing.T) {
 }
 
 func TestStore_StateFileMode0600(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX file modes are not enforced on Windows; see CORE-11")
+	}
 	s, path := newStore(t)
 	_, err := s.Register(tokenA, "cond")
 	require.NoError(t, err)

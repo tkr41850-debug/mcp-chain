@@ -4,15 +4,29 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
 
+// skipIfWindows skips POSIX file-mode assertions on Windows, where
+// os.FileMode bits are synthesized from ACLs and do not map to 0700/0755.
+// The security invariant (parent 0700, file 0600) is a POSIX contract;
+// Windows security is governed by its own ACL model, which these tests
+// do not attempt to validate.
+func skipIfWindowsPOSIXMode(t *testing.T) {
+	t.Helper()
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX file modes are not enforced on Windows; see CORE-11")
+	}
+}
+
 // TestResolve_XDGSet verifies the primary branch: XDG_STATE_HOME is set to a
 // temp directory, so Resolve() returns $tmp/mcp-chain/state.json and creates
 // the parent with mode 0700.
 func TestResolve_XDGSet(t *testing.T) {
+	skipIfWindowsPOSIXMode(t)
 	tmp := t.TempDir()
 	t.Setenv("XDG_STATE_HOME", tmp)
 	// Explicitly clear HOME so a leaked HOME from the caller can't mask a bug
@@ -41,6 +55,7 @@ func TestResolve_XDGSet(t *testing.T) {
 // TestResolve_HOMEFallback verifies: when XDG_STATE_HOME is unset (empty),
 // Resolve falls back to $HOME/.mcp-chain/state.json.
 func TestResolve_HOMEFallback(t *testing.T) {
+	skipIfWindowsPOSIXMode(t)
 	tmp := t.TempDir()
 	t.Setenv("XDG_STATE_HOME", "")
 	t.Setenv("HOME", tmp)
@@ -94,6 +109,7 @@ func TestResolve_EmptyXDG(t *testing.T) {
 // Rationale: the user's chosen mode is respected. Phase 4's state file write
 // enforces mode 0600 on the file itself, which is the security-relevant one.
 func TestResolve_ParentAlreadyExists(t *testing.T) {
+	skipIfWindowsPOSIXMode(t)
 	tmp := t.TempDir()
 	t.Setenv("XDG_STATE_HOME", tmp)
 	t.Setenv("HOME", "")
