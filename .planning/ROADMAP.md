@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: MCP Server Adapter** - MCP stdio server with register/resolve tools and terse descriptions (completed 2026-04-24)
 - [ ] **Phase 6: CLI Dispatch & Status Subcommand** - kong-based argv dispatch with the status subcommand (shared-lock reads, exit codes 0/1/2)
 - [x] **Phase 7: CLI Formatters (list, purge, resolve)** - Table formatter and administrative subcommands over the shared store (completed 2026-04-24)
-- [ ] **Phase 8: Plugin Packaging & Bash Monitor** - Claude Code plugin manifest, slash commands, and chain-wait.sh poll helper
+- [x] **Phase 8: Plugin Packaging & Bash Monitor** - Claude Code plugin manifest, slash commands, and chain-wait.sh poll helper (completed 2026-04-24)
 - [ ] **Phase 9: CI Release, Cross-compile & Test Gates** - GoReleaser cross-compile matrix, race gate, comprehensive unit + integration suites
 - [ ] **Phase 10: Docs & Dogfooding Polish** - README (install, usage, why) and dogfooding-driven polish
 
@@ -115,7 +115,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Every slash-command prompt body is ≤ 30 words and tells Claude exactly which MCP tool to call with which arguments — no branching prose, no examples, no boilerplate
   3. `scripts/chain-wait.sh` wraps `mcp-chain status <id>` in a 1-second poll loop, echoes `--timeout DURATION` (accepts `30s`/`1m`/`1h`/`24h`/`168h`) on invocation, prints `continue` on resolve, errors to stderr on unknown/purged ID mid-wait, and runs under macOS's default bash 3.2 with no bashisms
   4. `/chain-reg [condition]` registers (prompting for condition if omitted), `/chain-wait [id] [--timeout D]` runs the monitor, `/chain-list` prints the table, and `/chain-purge [id | --all | --resolved]` refuses bare invocation — end-to-end demo flow verified on Linux and macOS
-**Plans**: TBD
+**Plans**: 1 plan (1 complete, 0 remaining)
+  - [x] 08-01-PLAN.md — plugin manifests + slash commands + chain-wait.sh monitor; 5 shell gates + E2E smoke harness; commands renamed to /mcp-chain:reg/wait/list/purge (LD-14 user-approved) — SUMMARY: 08-01-SUMMARY.md
 **UI hint**: yes
 
 ### Phase 9: CI Release, Cross-compile & Test Gates
@@ -158,6 +159,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 5. MCP Server Adapter | 0/TBD | Not started | - |
 | 6. CLI Dispatch & Status Subcommand | 0/TBD | Not started | - |
 | 7. CLI Formatters (list, purge, resolve) | 1/1 | Complete   | 2026-04-24 |
-| 8. Plugin Packaging & Bash Monitor | 0/TBD | Not started | - |
+| 8. Plugin Packaging & Bash Monitor | 1/1 | Complete   | 2026-04-24 |
 | 9. CI Release, Cross-compile & Test Gates | 0/TBD | Not started | - |
 | 10. Docs & Dogfooding Polish | 0/TBD | Not started | - |

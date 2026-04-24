@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-23)
 
 **Core value:** N Claude Code sessions can coordinate via shared locks — register in one, any number of others wait on it, resolve when ready — with minimal overhead (fast startup, low memory, terse tool prompts, small binary).
-**Current focus:** Phase 8 — Plugin Packaging & Bash Monitor
+**Current focus:** Phase 9 — CI Release, Cross-compile & Test Gates
 
 ## Current Position
 
-Phase: 7 of 10 (CLI Formatters: list, purge, resolve) — COMPLETE
+Phase: 8 of 10 (Plugin Packaging & Bash Monitor) — COMPLETE
 Plan: 1 of 1 in current phase (COMPLETE)
-Status: Ready to advance to Phase 8
-Last activity: 2026-04-24 — Phase 7 Plan 01 complete: format.WriteTable + list/purge/resolve wired; 16 unit tests + 4 integration tests added; CORE-09 counter regression pinned; CMD-03/CMD-04 closed; review 0 HI/0 ME, verifier 14/14 PASS; stripped binary 7.82 MB
+Status: Ready to advance to Phase 9
+Last activity: 2026-04-24 — Phase 8 Plan 01 complete: plugin manifests (plugin.json, marketplace.json, .mcp.json) + 4 slash-command prompts (reg/wait/list/purge, ≤30 words each) + chain-wait.sh bash 3.2 monitor + 5 shell gates + E2E smoke harness; WR-01 OWNER placeholder fixed; review 0 HI/1 ME (WR-02 $ARGUMENTS norm, deferred to Phase 10 docs); verifier 4/4 SC PASS; go.mod/go.sum byte-identical; stripped binary 7.82 MB
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: ~15 min
-- Total execution time: ~91 min
+- Total plans completed: 7
+- Average duration: ~16 min (executor time only)
+- Total execution time: ~130 min (plus retry overhead on phase 8 after 429 mid-execution)
 
 **By Phase:**
 
@@ -33,10 +33,11 @@ Progress: [███████░░░] 70%
 | 05 | 1 | (unrecorded) | — |
 | 06 | 1 | ~20 min | ~20 min |
 | 07 | 1 | ~30 min | ~30 min |
+| 08 | 1 | ~40 min + inline resume | ~40 min |
 
 **Recent Trend:**
-- Last 6 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min), 07-01 (30 min)
-- Trend: ↑ (larger phases with more artifacts + integration suites)
+- Last 7 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min), 07-01 (30 min), 08-01 (40 min + inline resume after 429)
+- Trend: ↑ (multi-artifact phases — plugin tree + shell gates + Go tests + E2E smoke)
 
 *Updated after each plan completion*
 
@@ -64,6 +65,11 @@ Recent decisions affecting current work (from research synthesis 2026-04-23):
 - cli/purge (Phase 7, LD-3): kong `xor:"target"` is **flag-only** (verified in kong model.go:408) — positional `<id>` handled separately; store-side `ErrPurgeArgRequired` enforces exactly-one-target semantics
 - cli/resolve (Phase 7, LD-1): exit-code contract is **0/1** (success / any error); ErrNotOwner folds into exit 1 along with ErrUnknownID and ErrAlreadyResolved — no distinct exit 2 for resolve (unlike status's 0/2/1)
 - cli/* (Phase 7): all three `runList`/`runPurge`/`runResolve` functions pure over `(out, errW io.Writer, path string, ...)` mirroring Phase 6's `runStatus` pattern — kong `Run()` wrappers translate to `os.Exit(code)`
+- plugin packaging (Phase 8, LD-13): `.claude-plugin/marketplace.json` lives at REPO ROOT (not inside plugin/); `/plugin install <repo>` requires a marketplace manifest at the repo root pointing to the plugin subdir via `source: "./plugin"`
+- plugin commands (Phase 8, LD-14, user-approved 2026-04-24): slash commands named `reg`/`wait`/`list`/`purge` (not `chain-reg`/etc.) so Claude Code's mandatory `<plugin>:<command>` namespace yields clean `/mcp-chain:reg` forms; REQUIREMENTS.md CMD-01..04 prose to be updated in Phase 10 docs
+- chain-wait.sh (Phase 8, LD-5/6/7): POSIX bash 3.2-safe; translates Phase 6 exit codes 0→`echo continue && exit 0`, 2→`sleep 1` loop, 1|127|*→stderr+exit 1; `--timeout DURATION` accepts exactly `{N}s|{N}m|{N}h` with 604800s (168h) clamp; exit 124 on timeout per `timeout(1)` convention
+- chain-wait.sh (Phase 8, LD-9): binary path resolved via `${MCP_CHAIN_BIN:-mcp-chain}` — env override enables test isolation without modifying PATH
+- Phase 8 known unfixed: WR-02 `$ARGUMENTS` shell-injection surface in wait.md/purge.md prompt templates — documented as Claude Code ecosystem norm (trusted slash-command invocation); Phase 10 README to note
 
 ### Pending Todos
 
