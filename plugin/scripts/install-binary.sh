@@ -13,12 +13,36 @@
 
 set -eu
 
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
-PLUGIN_DATA="${CLAUDE_PLUGIN_DATA:-}"
+# Claude Code sets CLAUDE_PLUGIN_ROOT / CLAUDE_PLUGIN_DATA for MCP server
+# spawns and hook executions, but NOT when the LLM runs this script via its
+# Bash tool in response to a slash-command prompt. Self-derive both so the
+# script works in either context.
 
-if [ -z "$PLUGIN_ROOT" ] || [ -z "$PLUGIN_DATA" ]; then
-  echo "mcp-chain: CLAUDE_PLUGIN_ROOT / CLAUDE_PLUGIN_DATA not set" >&2
-  exit 1
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
+if [ -z "$PLUGIN_ROOT" ]; then
+  SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+  PLUGIN_ROOT=$(cd "$SCRIPT_DIR/.." && pwd)
+fi
+
+PLUGIN_DATA="${CLAUDE_PLUGIN_DATA:-}"
+if [ -z "$PLUGIN_DATA" ]; then
+  # Mirror Claude Code's own layout when possible: plugin cache lives at
+  # .../plugins/cache/<marketplace>/<plugin>/<version> and the matching data
+  # dir is .../plugins/data/<plugin>-<marketplace>. Fall back to PLUGIN_ROOT
+  # itself (wiped on plugin upgrade, but idempotent re-install is cheap).
+  case "$PLUGIN_ROOT" in
+    */plugins/cache/*/*/*)
+      # Layout: <prefix>/plugins/cache/<market>/<plugin>/<version>
+      D1="${PLUGIN_ROOT%/*}"     # .../cache/<market>/<plugin>
+      D2="${D1%/*}"              # .../cache/<market>
+      D3="${D2%/*}"              # .../cache
+      D4="${D3%/*}"              # .../plugins
+      PLUGIN_DATA="$D4/data/${D1##*/}-${D2##*/}"
+      ;;
+    *)
+      PLUGIN_DATA="$PLUGIN_ROOT"
+      ;;
+  esac
 fi
 
 BIN_DIR="$PLUGIN_DATA/bin"
