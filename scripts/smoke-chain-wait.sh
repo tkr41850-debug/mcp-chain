@@ -9,6 +9,13 @@
 
 set -eu
 
+# PATH pre-flight (Phase 10 D-11): fail fast with a readable error
+# if `go` is not on PATH, instead of an obscure subshell failure below.
+if ! command -v go >/dev/null 2>&1; then
+  echo "smoke: go not found on PATH (needed to build and seed state)" >&2
+  exit 127
+fi
+
 SMOKE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MONITOR="$SMOKE_ROOT/plugin/scripts/chain-wait.sh"
 SEED="$SMOKE_ROOT/scripts/internal/seed_pending.go"
