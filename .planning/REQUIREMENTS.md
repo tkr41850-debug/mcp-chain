@@ -28,15 +28,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Slash Commands (Claude Code plugin)
 
-- [ ] **CMD-01**: `/chain-reg [condition]` — registers the current session and prints the word-ID. If `[condition]` is omitted, prompts the user in-conversation for the condition before registering
-- [ ] **CMD-02**: `/chain-wait [id] [--timeout DURATION]` — runs the bash monitor that polls `mcp-chain status <id>` every 1s and prints `continue` on resolve. `--timeout` accepts Go-style duration strings (`30s`, `1m`, `1h`, `24h`, `168h` for 1w); timeout value is echoed on invocation so it appears in the monitor log. Without `--timeout`, wait is unbounded. Errors immediately if the ID doesn't exist at start. Monitor also errors if the ID is purged mid-wait
-- [ ] **CMD-03**: `/chain-list` — prints a human-readable table of all entries (ID, status, condition, created_at, resolved_at)
-- [ ] **CMD-04**: `/chain-purge [id | --all | --resolved]` — explicit cleanup. Requires at least one of the three arguments; bare `/chain-purge` errors
+- [ ] **CMD-01**: `/mcp-chain:reg [condition]` — registers the current session and prints the word-ID. If `[condition]` is omitted, prompts the user in-conversation for the condition before registering
+- [ ] **CMD-02**: `/mcp-chain:wait [id] [--timeout DURATION]` — runs the bash monitor that polls `mcp-chain status <id>` every 1s and prints `continue` on resolve. `--timeout` accepts Go-style duration strings (`30s`, `1m`, `1h`, `24h`, `168h` for 1w); timeout value is echoed on invocation so it appears in the monitor log. Without `--timeout`, wait is unbounded. Errors immediately if the ID doesn't exist at start. Monitor also errors if the ID is purged mid-wait
+- [ ] **CMD-03**: `/mcp-chain:list` — prints a human-readable table of all entries (ID, status, condition, created_at, resolved_at)
+- [ ] **CMD-04**: `/mcp-chain:purge [id | --all | --resolved]` — explicit cleanup. Requires at least one of the three arguments; bare `/mcp-chain:purge` errors
 - [ ] **CMD-05**: All slash-command prompt bodies are terse — single paragraph max. No boilerplate, no multi-paragraph explanations. Prompts tell Claude exactly what MCP tool to call with what args
 
 ### Bash Monitor Helper
 
-- [ ] **HELPER-01**: Repo ships `scripts/chain-wait.sh` that wraps `mcp-chain status <id>` in a 1-second poll loop, prints `continue` on resolve, errors to stderr on unknown ID (mid-wait purge), and supports `--timeout DURATION`. `/chain-wait` instructs Claude to run it via the monitor tool
+- [ ] **HELPER-01**: Repo ships `plugin/scripts/chain-wait.sh` that wraps `mcp-chain status <id>` in a 1-second poll loop, prints `continue` on resolve, errors to stderr on unknown ID (mid-wait purge), and supports `--timeout DURATION`. `/mcp-chain:wait` instructs Claude to run it via the monitor tool
 - [ ] **HELPER-02**: Script is POSIX-bash compatible, no bashisms that break on macOS's default bash 3.2
 
 ### Distribution & Install
@@ -44,7 +44,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DIST-01**: Packaged as a Claude Code plugin — `plugin.json` manifest, `commands/*.md` slash commands, `.mcp.json` referencing `${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain serve`. Installable via `/plugin install <github-repo>` with zero additional config
 - [x] **DIST-02**: GitHub Actions CI via GoReleaser — on push/PR runs `go test -race ./...` and `go build`; on tag (`v*`) cross-compiles `linux/darwin/windows` × `amd64/arm64`, generates checksums, attaches binaries to the GitHub release
 - [ ] **DIST-03**: CI size gate — fail build if binary exceeds 15MB stripped (`-ldflags="-s -w"`). Fail startup-time smoke test if binary takes >100ms to print `--version`
-- [ ] **DIST-04**: Brief `README.md` covering why it exists, install steps (plugin install + manual install), usage examples for `/chain-reg`, `/chain-wait`, `/chain-list`, `/chain-purge`, and manual CLI usage
+- [ ] **DIST-04**: Brief `README.md` covering why it exists, install steps (plugin install + manual install), usage examples for `/mcp-chain:reg`, `/mcp-chain:wait`, `/mcp-chain:list`, `/mcp-chain:purge`, and manual CLI usage
 
 ### Quality & Testing
 
@@ -83,7 +83,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | Daemon / socket server | Rejected in favor of shared JSON file; simpler lifecycle, no background process |
 | SQLite / embedded DB | Overkill for expected entry counts; JSON + flock is sufficient and keeps binary small |
 | Programmatic conditions (polled shell expressions) | Rejected; natural-language Claude-judged resolution is simpler and more flexible |
-| Auto-expiration of resolved IDs (v1) | Explicit `/chain-purge` only — predictable, no surprising GC. TTL deferred to v2 (LC-01) |
+| Auto-expiration of resolved IDs (v1) | Explicit `/mcp-chain:purge` only — predictable, no surprising GC. TTL deferred to v2 (LC-01) |
 | DAG execution / task scheduling | Not a workflow engine; use Airflow/Taskfile/Make for DAGs |
 | Artifact passing between sessions | Out of scope; mcp-chain is a signal primitive, not a pub/sub or message queue |
 | Heartbeat / stale-lock detection | Rejected; explicit purge is the model. Adds complexity without clear value for single-user local use |
@@ -134,7 +134,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 **Notes:**
 - Unit and integration tests are authored continuously alongside implementation in Phases 2-8 as normal engineering practice. QA-01 and QA-02 land in Phase 9 as the *requirement verification* — that is where the comprehensive suite becomes the blocking gate (via `go test -race` in CI, QA-03).
 - CORE-01 is split: the subcommand skeleton with `--version` lands in Phase 1 (needed by the startup/size smoke test); `status` completes in Phase 6; `list`/`purge`/`resolve` complete in Phase 7. The full requirement is satisfied at Phase 7 close; Phase 1 ownership is for the skeleton + dispatch wiring.
-- CMD-03 and CMD-04 split by surface: CLI semantics land in Phase 7 (`mcp-chain list`, `mcp-chain purge`); slash-command wrapper prompts land in Phase 8 (`/chain-list`, `/chain-purge`). Each REQ-ID is satisfied end-to-end only when both phases close.
+- CMD-03 and CMD-04 split by surface: CLI semantics land in Phase 7 (`mcp-chain list`, `mcp-chain purge`); slash-command wrapper prompts land in Phase 8 (`/mcp-chain:list`, `/mcp-chain:purge`). Each REQ-ID is satisfied end-to-end only when both phases close.
 - Session-link (CORE-08) and state schema (CORE-09) live in Phase 4 (the store phase) per research resolution — not a separate phase.
 - Stdout discipline (MCP-02) and size/startup gates (DIST-03) are established in Phase 1, before any MCP handler code is written (Phase 5).
 - License selection is deferred to pre-release polish and is intentionally *not* a roadmap phase.
