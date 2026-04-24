@@ -21,9 +21,9 @@ func TestStubsExitCodes(t *testing.T) {
 	}{
 		// Phase 5 wired `serve` to real logic — it no longer exits 3.
 		// Its behaviour is covered by internal/mcpserver (unit + integration).
-		// Phase 6 wired `status` (see status.go / status_test.go / integration_test.go)
-		// so that row is no longer a stub.
-		{"purge-all", []string{"purge", "--all"}, 3, "not implemented (Phase 7)", true},
+		// Phase 6 wired `status` (see status.go / status_test.go / integration_test.go).
+		// Phase 7 wired `list` and `purge` — all stubs migrated; Task 6 deletes
+		// this (now empty) test in the Wave D cleanup commit.
 	}
 
 	for _, tt := range tests {

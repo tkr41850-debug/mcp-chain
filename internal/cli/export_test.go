@@ -14,3 +14,8 @@ func RunStatus(out, errW io.Writer, path, id string) int {
 func RunList(out, errW io.Writer, path string) int {
 	return runList(out, errW, path)
 }
+
+// RunPurge re-exports runPurge for xtests (Phase 7).
+func RunPurge(out, errW io.Writer, path, id string, all, resolvedOnly bool) int {
+	return runPurge(out, errW, path, id, all, resolvedOnly)
+}
