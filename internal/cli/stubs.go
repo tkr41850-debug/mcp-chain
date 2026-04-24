@@ -57,15 +57,6 @@ func (c *ServeCmd) Run() error {
 	return mcpserver.Run(ctx, st, token, Version)
 }
 
-// ListCmd prints a human-readable table of all entries (Phase 7 target).
-type ListCmd struct{}
-
-func (c *ListCmd) Run() error {
-	fmt.Fprintln(os.Stderr, "mcp-chain list: not implemented (Phase 7)")
-	os.Exit(ExitCodeNotImplemented)
-	return nil
-}
-
 // PurgeCmd deletes entries. Accepts <id>, --all, or --resolved. The xor tag
 // makes --all and --resolved mutually exclusive; one-of-required enforcement
 // (including rejecting bare `purge`) lands in Phase 7 when the real

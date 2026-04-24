@@ -23,7 +23,6 @@ func TestStubsExitCodes(t *testing.T) {
 		// Its behaviour is covered by internal/mcpserver (unit + integration).
 		// Phase 6 wired `status` (see status.go / status_test.go / integration_test.go)
 		// so that row is no longer a stub.
-		{"list", []string{"list"}, 3, "not implemented (Phase 7)", true},
 		{"purge-all", []string{"purge", "--all"}, 3, "not implemented (Phase 7)", true},
 	}
 

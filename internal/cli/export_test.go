@@ -9,3 +9,8 @@ import "io"
 func RunStatus(out, errW io.Writer, path, id string) int {
 	return runStatus(out, errW, path, id)
 }
+
+// RunList re-exports runList for xtests (Phase 7).
+func RunList(out, errW io.Writer, path string) int {
+	return runList(out, errW, path)
+}
