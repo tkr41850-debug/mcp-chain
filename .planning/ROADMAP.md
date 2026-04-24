@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Store Core, Flock & Atomic Writes** - Flock-protected JSON store with atomic RMW, schema versioning, and OwnerToken session-link (completed 2026-04-23)
 - [x] **Phase 5: MCP Server Adapter** - MCP stdio server with register/resolve tools and terse descriptions (completed 2026-04-24)
 - [ ] **Phase 6: CLI Dispatch & Status Subcommand** - kong-based argv dispatch with the status subcommand (shared-lock reads, exit codes 0/1/2)
-- [ ] **Phase 7: CLI Formatters (list, purge, resolve)** - Table formatter and administrative subcommands over the shared store
+- [x] **Phase 7: CLI Formatters (list, purge, resolve)** - Table formatter and administrative subcommands over the shared store (completed 2026-04-24)
 - [ ] **Phase 8: Plugin Packaging & Bash Monitor** - Claude Code plugin manifest, slash commands, and chain-wait.sh poll helper
 - [ ] **Phase 9: CI Release, Cross-compile & Test Gates** - GoReleaser cross-compile matrix, race gate, comprehensive unit + integration suites
 - [ ] **Phase 10: Docs & Dogfooding Polish** - README (install, usage, why) and dogfooding-driven polish
@@ -103,7 +103,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. `mcp-chain list` prints an aligned human-readable table (ID, status, condition, created_at, resolved_at) over a shared-lock read
   2. `mcp-chain purge` requires at least one of `<id>` / `--all` / `--resolved`; bare `mcp-chain purge` exits non-zero with an error on stderr; counter is never decremented
   3. `mcp-chain resolve <id> [--force]` mirrors the MCP resolve tool for scripting; `--force` bypasses the OwnerToken check as the documented operator-driven recovery escape hatch
-**Plans**: TBD
+**Plans**: 1 plan (1 complete, 0 remaining)
+  - [x] 07-01-PLAN.md — format.WriteTable + list/purge/resolve commands, 16 unit + 4 integration tests, CORE-09 counter regression (CMD-03, CMD-04) — SUMMARY: 07-01-SUMMARY.md
 
 ### Phase 8: Plugin Packaging & Bash Monitor
 **Goal**: The compiled binary is installable with zero additional config as a Claude Code plugin via `/plugin install`, with four token-budgeted slash commands and a POSIX-bash monitor script that calls back into `mcp-chain status` on a 1-second poll.
@@ -156,7 +157,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 4. Store Core, Flock & Atomic Writes | 0/TBD | Not started | - |
 | 5. MCP Server Adapter | 0/TBD | Not started | - |
 | 6. CLI Dispatch & Status Subcommand | 0/TBD | Not started | - |
-| 7. CLI Formatters (list, purge, resolve) | 0/TBD | Not started | - |
+| 7. CLI Formatters (list, purge, resolve) | 1/1 | Complete   | 2026-04-24 |
 | 8. Plugin Packaging & Bash Monitor | 0/TBD | Not started | - |
 | 9. CI Release, Cross-compile & Test Gates | 0/TBD | Not started | - |
 | 10. Docs & Dogfooding Polish | 0/TBD | Not started | - |

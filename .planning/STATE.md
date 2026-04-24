@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-23)
 
 **Core value:** N Claude Code sessions can coordinate via shared locks — register in one, any number of others wait on it, resolve when ready — with minimal overhead (fast startup, low memory, terse tool prompts, small binary).
-**Current focus:** Phase 7 — CLI Formatters (list, purge, resolve)
+**Current focus:** Phase 8 — Plugin Packaging & Bash Monitor
 
 ## Current Position
 
-Phase: 6 of 10 (CLI Dispatch & Status Subcommand) — COMPLETE
+Phase: 7 of 10 (CLI Formatters: list, purge, resolve) — COMPLETE
 Plan: 1 of 1 in current phase (COMPLETE)
-Status: Ready to advance to Phase 7
-Last activity: 2026-04-24 — Phase 6 Plan 01 complete: runStatus exit-code decision tree (0/2/1) + kong.Writers stderr routing + manual --version pre-parse; 12 tests added (5 unit + 7 integration); CORE-01 closed
+Status: Ready to advance to Phase 8
+Last activity: 2026-04-24 — Phase 7 Plan 01 complete: format.WriteTable + list/purge/resolve wired; 16 unit tests + 4 integration tests added; CORE-09 counter regression pinned; CMD-03/CMD-04 closed; review 0 HI/0 ME, verifier 14/14 PASS; stripped binary 7.82 MB
 
-Progress: [██████░░░░] 60%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~12 min
-- Total execution time: ~61 min
+- Total plans completed: 6
+- Average duration: ~15 min
+- Total execution time: ~91 min
 
 **By Phase:**
 
@@ -32,10 +32,11 @@ Progress: [██████░░░░] 60%
 | 04 | 1 | ~25 min | ~25 min |
 | 05 | 1 | (unrecorded) | — |
 | 06 | 1 | ~20 min | ~20 min |
+| 07 | 1 | ~30 min | ~30 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min)
-- Trend: ↑ (larger phases with integration suites)
+- Last 6 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min), 07-01 (30 min)
+- Trend: ↑ (larger phases with more artifacts + integration suites)
 
 *Updated after each plan completion*
 
@@ -59,6 +60,10 @@ Recent decisions affecting current work (from research synthesis 2026-04-23):
 - cli/status (Phase 6): exit-code contract locked 0/2/1 (NOT 0/1/2); `runStatus(out, errW io.Writer, path, id string) int` pure over writers + path (no env reads); `StatusCmd.Run` uses `os.Exit(code)` not kong `ExitCoder` so pending row keeps stderr empty
 - cli/main (Phase 6): `kong.Writers(os.Stderr, os.Stderr)` + manual `--version` pre-parse replaces `kong.VersionFlag` (which hard-codes `app.Stdout`, incompatible with the Writers redirect); `--version` remains the ONE sanctioned stdout write in the CLI surface
 - cli/status (Phase 6, LD-6): `ErrSchemaVersion` / `ErrCorruptJSON` fold into generic exit 1 — no distinct exit code for schema mismatch
+- cli/format (Phase 7, LD-2): stdlib `text/tabwriter` with `NewWriter(w, 0, 0, 2, ' ', 0)` for list rendering; RFC3339 UTC timestamps, 48-char condition truncation with ellipsis, `-` for nil ResolvedAt, CreatedAt-then-ID sort
+- cli/purge (Phase 7, LD-3): kong `xor:"target"` is **flag-only** (verified in kong model.go:408) — positional `<id>` handled separately; store-side `ErrPurgeArgRequired` enforces exactly-one-target semantics
+- cli/resolve (Phase 7, LD-1): exit-code contract is **0/1** (success / any error); ErrNotOwner folds into exit 1 along with ErrUnknownID and ErrAlreadyResolved — no distinct exit 2 for resolve (unlike status's 0/2/1)
+- cli/* (Phase 7): all three `runList`/`runPurge`/`runResolve` functions pure over `(out, errW io.Writer, path string, ...)` mirroring Phase 6's `runStatus` pattern — kong `Run()` wrappers translate to `os.Exit(code)`
 
 ### Pending Todos
 
@@ -77,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-24
-Stopped at: Phase 6 Plan 01 complete — runStatus exit-code decision tree (0/2/1) wired under kong; 5 unit tests + 7 integration tests green under -race; 10-concurrent timing observed 500–700ms isolated, bound relaxed from 1s → 2s after code-review observed 1.26s flake under full -race suite load (research §OQ-2 pre-authorized); CORE-01 closed; stripped binary 7.4 MB
-Resume file: None — ready for Phase 7 (list/purge/resolve CLI formatters)
+Stopped at: Phase 7 Plan 01 complete — `internal/cli/format/WriteTable` (text/tabwriter) + list/purge/resolve commands wired; 6 atomic commits (7c11b88 → bc8b0b5); 16 unit + 4 integration tests green under -race; `TestPurge_CounterNotDecremented` pins CORE-09 (counter never decremented on purge); review 0 HI / 0 ME / 5 LO; verifier 14/14 PASS; stripped binary 7.82 MB; CMD-03 + CMD-04 closed
+Resume file: None — ready for Phase 8 (Plugin Packaging & Bash Monitor)
