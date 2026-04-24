@@ -7,54 +7,6 @@ import (
 	"testing"
 )
 
-// TestStubsExitCodes verifies every subcommand stub exits with ExitCodeNotImplemented (3).
-// Builds the binary fresh via `go build` into a temp file to avoid polluting the repo root.
-func TestStubsExitCodes(t *testing.T) {
-	binPath := buildBinary(t)
-
-	tests := []struct {
-		name            string
-		args            []string
-		wantExit        int
-		wantErrContains string // substring expected in stderr
-		wantStdoutEmpty bool
-	}{
-		// Phase 5 wired `serve` to real logic — it no longer exits 3.
-		// Its behaviour is covered by internal/mcpserver (unit + integration).
-		// Phase 6 wired `status` (see status.go / status_test.go / integration_test.go).
-		// Phase 7 wired `list` and `purge` — all stubs migrated; Task 6 deletes
-		// this (now empty) test in the Wave D cleanup commit.
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cmd := exec.Command(binPath, tt.args...)
-			var stdout, stderr bytes.Buffer
-			cmd.Stdout = &stdout
-			cmd.Stderr = &stderr
-			err := cmd.Run()
-
-			exitErr, ok := err.(*exec.ExitError)
-			if !ok && err != nil {
-				t.Fatalf("unexpected error kind: %v", err)
-			}
-			gotExit := 0
-			if exitErr != nil {
-				gotExit = exitErr.ExitCode()
-			}
-			if gotExit != tt.wantExit {
-				t.Errorf("exit code: got %d, want %d (stderr=%q)", gotExit, tt.wantExit, stderr.String())
-			}
-			if !strings.Contains(stderr.String(), tt.wantErrContains) {
-				t.Errorf("stderr: got %q, want to contain %q", stderr.String(), tt.wantErrContains)
-			}
-			if tt.wantStdoutEmpty && stdout.Len() != 0 {
-				t.Errorf("stdout: expected empty, got %q (MCP-02 violation)", stdout.String())
-			}
-		})
-	}
-}
-
 // TestVersionFlagWritesToStdout asserts --version exits 0 and writes to stdout.
 // This is the ONE sanctioned stdout write in Phase 1.
 func TestVersionFlagWritesToStdout(t *testing.T) {

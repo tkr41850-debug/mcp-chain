@@ -1,9 +1,9 @@
 // Package cli holds CLI subcommand types wired into the kong grammar at
-// cmd/mcp-chain/main.go. Phase 1 implements every command as a stub that
-// exits with ExitCodeNotImplemented after writing a one-line operator
-// message to stderr; Phase 5 wired serve, Phase 6 wired status (see
-// status.go), Phase 7 (list/purge/resolve) replaces the remaining stub
-// bodies with real logic.
+// cmd/mcp-chain/main.go. Phase 5 wired serve, Phase 6 wired status (see
+// status.go), Phase 7 wired list/purge/resolve (see list.go, purge.go,
+// resolve.go); only ServeCmd remains in this file. The
+// ExitCodeNotImplemented constant is retained as a documented reserved
+// value (do not collide with status 0/1/2 in CORE-01).
 package cli
 
 import (
