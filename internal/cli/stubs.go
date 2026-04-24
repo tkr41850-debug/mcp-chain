@@ -56,4 +56,3 @@ func (c *ServeCmd) Run() error {
 	defer cancel()
 	return mcpserver.Run(ctx, st, token, Version)
 }
-

@@ -78,7 +78,7 @@ func TestResolveHandler_OwnerOk(t *testing.T) {
 	require.Nil(t, res)
 
 	resv := resolveHandler(st, tok)
-	rres, _, rerr := resv(context.Background(), &mcp.CallToolRequest{}, ResolveIn{ID: out.ID})
+	rres, _, rerr := resv(context.Background(), &mcp.CallToolRequest{}, ResolveIn(out))
 	require.NoError(t, rerr)
 	require.Nil(t, rres, "matching owner token -> nil result (success)")
 
@@ -102,9 +102,9 @@ func TestResolveHandler_AlreadyResolved(t *testing.T) {
 	_, out, _ := reg(context.Background(), &mcp.CallToolRequest{}, RegisterIn{Condition: "x"})
 
 	resv := resolveHandler(st, tok)
-	_, _, _ = resv(context.Background(), &mcp.CallToolRequest{}, ResolveIn{ID: out.ID})
+	_, _, _ = resv(context.Background(), &mcp.CallToolRequest{}, ResolveIn(out))
 
-	res, _, _ := resv(context.Background(), &mcp.CallToolRequest{}, ResolveIn{ID: out.ID})
+	res, _, _ := resv(context.Background(), &mcp.CallToolRequest{}, ResolveIn(out))
 	body := decodeErrorBody(t, res)
 	require.Equal(t, "already_resolved", body.Code)
 }
@@ -119,7 +119,7 @@ func TestResolveHandler_NotOwner(t *testing.T) {
 	_, out, _ := reg(context.Background(), &mcp.CallToolRequest{}, RegisterIn{Condition: "x"})
 
 	resv := resolveHandler(st, tokB) // different session!
-	res, _, _ := resv(context.Background(), &mcp.CallToolRequest{}, ResolveIn{ID: out.ID})
+	res, _, _ := resv(context.Background(), &mcp.CallToolRequest{}, ResolveIn(out))
 	body := decodeErrorBody(t, res)
 	require.Equal(t, "not_owner", body.Code,
 		"mismatched owner token MUST surface distinct wire code (SC #2)")

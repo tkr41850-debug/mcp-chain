@@ -40,7 +40,7 @@ type PurgeCmd struct {
 func (c *PurgeCmd) Run() error {
 	path, err := statepath.Resolve()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "mcp-chain: %v\n", err)
 		os.Exit(1)
 	}
 	code := runPurge(os.Stdout, os.Stderr, path, c.ID, c.All, c.Resolved)
@@ -57,7 +57,7 @@ func runPurge(out, errW io.Writer, path string, id string, all, resolvedOnly boo
 	_ = out // purge emits nothing to stdout (LD-1 success rows all empty)
 	st, err := store.Open(path)
 	if err != nil {
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 	_, err = st.Purge(store.PurgeOptions{
@@ -73,13 +73,13 @@ func runPurge(out, errW io.Writer, path string, id string, all, resolvedOnly boo
 		// positional is optional and neither flag was set. Store is
 		// the single source of truth for the "exactly one target"
 		// check (LD-6 / pitfall 5).
-		fmt.Fprintln(errW, "mcp-chain: purge requires <id>, --all, or --resolved")
+		_, _ = fmt.Fprintln(errW, "mcp-chain: purge requires <id>, --all, or --resolved")
 		return 1
 	case errors.Is(err, store.ErrUnknownID):
-		fmt.Fprintf(errW, "mcp-chain: unknown id: %s\n", id)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: unknown id: %s\n", id)
 		return 1
 	default:
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 }

@@ -38,7 +38,7 @@ type StatusCmd struct {
 func (c *StatusCmd) Run() error {
 	path, err := statepath.Resolve()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "mcp-chain: %v\n", err)
 		os.Exit(1)
 	}
 	code := runStatus(os.Stdout, os.Stderr, path, c.ID)
@@ -57,22 +57,22 @@ func (c *StatusCmd) Run() error {
 func runStatus(out, errW io.Writer, path, id string) int {
 	st, err := store.Open(path)
 	if err != nil {
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 	r, err := st.Get(id)
 	switch {
 	case err == nil && r.Status == "resolved":
-		fmt.Fprintln(out, "resolved")
+		_, _ = fmt.Fprintln(out, "resolved")
 		return 0
 	case err == nil && r.Status == "pending":
-		fmt.Fprintln(out, "pending")
+		_, _ = fmt.Fprintln(out, "pending")
 		return 2
 	case errors.Is(err, store.ErrUnknownID):
-		fmt.Fprintf(errW, "mcp-chain: unknown id: %s\n", id)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: unknown id: %s\n", id)
 		return 1
 	default:
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 }

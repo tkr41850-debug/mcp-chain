@@ -33,8 +33,8 @@ func (s *Store) withLockedState(fn func(*state) error) (err error) {
 	defer s.mu.Unlock()
 
 	fl := flock.New(lockFilePath(s.path))
-	if err := fl.Lock(); err != nil {
-		return fmt.Errorf("store: acquire exclusive lock on %s: %w", fl.Path(), err)
+	if lerr := fl.Lock(); lerr != nil {
+		return fmt.Errorf("store: acquire exclusive lock on %s: %w", fl.Path(), lerr)
 	}
 	defer func() {
 		if uerr := fl.Unlock(); uerr != nil && err == nil {
@@ -65,8 +65,8 @@ func (s *Store) withSharedLock(fn func(*state) error) (err error) {
 	defer s.mu.Unlock()
 
 	fl := flock.New(lockFilePath(s.path))
-	if err := fl.RLock(); err != nil {
-		return fmt.Errorf("store: acquire shared lock on %s: %w", fl.Path(), err)
+	if lerr := fl.RLock(); lerr != nil {
+		return fmt.Errorf("store: acquire shared lock on %s: %w", fl.Path(), lerr)
 	}
 	defer func() {
 		if uerr := fl.Unlock(); uerr != nil && err == nil {

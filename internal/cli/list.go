@@ -28,7 +28,7 @@ type ListCmd struct{}
 func (c *ListCmd) Run() error {
 	path, err := statepath.Resolve()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "mcp-chain: %v\n", err)
 		os.Exit(1)
 	}
 	code := runList(os.Stdout, os.Stderr, path)
@@ -44,20 +44,20 @@ func (c *ListCmd) Run() error {
 func runList(out, errW io.Writer, path string) int {
 	st, err := store.Open(path)
 	if err != nil {
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 	records, err := st.List()
 	if err != nil {
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 	if len(records) == 0 {
-		fmt.Fprintln(errW, "mcp-chain: no entries")
+		_, _ = fmt.Fprintln(errW, "mcp-chain: no entries")
 		return 0
 	}
 	if err := format.WriteTable(out, records); err != nil {
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 	return 0

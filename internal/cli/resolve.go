@@ -33,7 +33,7 @@ type ResolveCmd struct {
 func (c *ResolveCmd) Run() error {
 	path, err := statepath.Resolve()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "mcp-chain: %v\n", err)
 		os.Exit(1)
 	}
 	code := runResolve(os.Stdout, os.Stderr, path, c.ID, c.Force)
@@ -52,7 +52,7 @@ func runResolve(out, errW io.Writer, path, id string, force bool) int {
 	_ = out // resolve emits nothing to stdout (LD-1 success row is empty)
 	st, err := store.Open(path)
 	if err != nil {
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 	err = st.Resolve(id, "", store.ResolveOptions{Force: force})
@@ -60,16 +60,16 @@ func runResolve(out, errW io.Writer, path, id string, force bool) int {
 	case err == nil:
 		return 0
 	case errors.Is(err, store.ErrUnknownID):
-		fmt.Fprintf(errW, "mcp-chain: unknown id: %s\n", id)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: unknown id: %s\n", id)
 		return 1
 	case errors.Is(err, store.ErrNotOwner):
-		fmt.Fprintln(errW, "mcp-chain: not owner (use --force to override)")
+		_, _ = fmt.Fprintln(errW, "mcp-chain: not owner (use --force to override)")
 		return 1
 	case errors.Is(err, store.ErrAlreadyResolved):
-		fmt.Fprintln(errW, "mcp-chain: already resolved")
+		_, _ = fmt.Fprintln(errW, "mcp-chain: already resolved")
 		return 1
 	default:
-		fmt.Fprintf(errW, "mcp-chain: %v\n", err)
+		_, _ = fmt.Fprintf(errW, "mcp-chain: %v\n", err)
 		return 1
 	}
 }

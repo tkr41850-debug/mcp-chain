@@ -47,9 +47,10 @@ func WriteTable(w io.Writer, records []store.Record) error {
 	// minwidth=0, tabwidth=0, padding=2, padchar=' ', flags=0
 	// → two-space minimum separator, left-aligned, no ANSI.
 	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(tw, "ID\tSTATUS\tCONDITION\tCREATED\tRESOLVED")
+	// tabwriter buffers writes; errors surface on Flush() below.
+	_, _ = fmt.Fprintln(tw, "ID\tSTATUS\tCONDITION\tCREATED\tRESOLVED")
 	for _, r := range sorted {
-		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n",
+		_, _ = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n",
 			r.ID,
 			r.Status,
 			truncate(r.Condition, conditionMaxWidth),

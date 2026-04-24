@@ -49,8 +49,8 @@ func TestAllocate(t *testing.T) {
 		{"first fallback (hex-0001)", 1296, "hex-0001"},
 		{"second fallback (hex-0002)", 1297, "hex-0002"},
 		{"fallback at hex-fffe", 66829, "hex-fffe"},  // 66829 - 1295 = 65534 = 0xfffe
-		{"boundary before widen", 66830, "hex-ffff"},  // 66830 - 1295 = 65535 = 0xffff
-		{"widen to 5 digits", 66831, "hex-10000"},     // 66831 - 1295 = 65536 = 0x10000
+		{"boundary before widen", 66830, "hex-ffff"}, // 66830 - 1295 = 65535 = 0xffff
+		{"widen to 5 digits", 66831, "hex-10000"},    // 66831 - 1295 = 65536 = 0x10000
 		{"widen + 1", 66832, "hex-10001"},
 	}
 	for _, tc := range tests {

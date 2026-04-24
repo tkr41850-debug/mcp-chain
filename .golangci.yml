@@ -11,10 +11,11 @@ run:
 linters:
   default: standard
   enable:
-    - forbidigo
-    - staticcheck  # v2 bundles stylecheck + gosimple under this name
-    # govet is in the default `standard` set already; listed for visibility.
-    - govet
+    - errcheck      # new in Phase 9 — explicit (standard includes it; explicit is safer)
+    - forbidigo     # existing — MCP-02 stdout guard
+    - govet         # existing (also in `default: standard`)
+    - staticcheck   # existing — v2 bundles gosimple + stylecheck
+    # NOTE: gofmt moved to top-level `formatters:` block (v2 requires it there, not here).
 
   settings:
     forbidigo:
@@ -41,6 +42,10 @@ linters:
       enable:
         - shadow
         # Default govet checks apply; shadow is opt-in and helpful.
+
+formatters:
+  enable:
+    - gofmt         # new in Phase 9 — CLAUDE.md recommendation; v2 formatter
 
 issues:
   max-issues-per-linter: 0

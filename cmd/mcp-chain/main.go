@@ -49,7 +49,7 @@ func main() {
 	// kong.Writers redirect below does not capture it.
 	for _, a := range os.Args[1:] {
 		if a == "--version" {
-			fmt.Fprintln(os.Stdout, "mcp-chain "+version)
+			_, _ = fmt.Fprintln(os.Stdout, "mcp-chain "+version)
 			os.Exit(0)
 		}
 	}
