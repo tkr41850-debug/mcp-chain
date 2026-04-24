@@ -74,7 +74,7 @@ changelog:
 
 release:
   github:
-    owner: anthropics
+    owner: tkr41850-debug
     name: mcp-chain
   draft: false
   prerelease: auto

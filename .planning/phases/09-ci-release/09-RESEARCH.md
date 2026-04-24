@@ -199,7 +199,7 @@ changelog:
 
 release:
   github:
-    owner: anthropics    # TODO: verify repo org at release time
+    owner: tkr41850-debug    # TODO: verify repo org at release time
     name: mcp-chain
   draft: false
   prerelease: auto       # v0.1.0, v0.1.0-rc.1 → prerelease; v1.0.0 → stable
