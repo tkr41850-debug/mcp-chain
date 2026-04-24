@@ -27,10 +27,11 @@ var version = "dev"
 // so a kong-driven version flag would write to stderr and fail SC #3
 // round-trip).
 type CLI struct {
-	Serve  cli.ServeCmd  `cmd:"" help:"Run MCP stdio server."`
-	Status cli.StatusCmd `cmd:"" help:"Check status of an id. Exits 0 resolved, 2 pending, 1 unknown."`
-	List   cli.ListCmd   `cmd:"" help:"List all registered ids."`
-	Purge  cli.PurgeCmd  `cmd:"" help:"Purge entries. Requires one of <id>, --all, or --resolved."`
+	Serve   cli.ServeCmd   `cmd:"" help:"Run MCP stdio server."`
+	Status  cli.StatusCmd  `cmd:"" help:"Check status of an id. Exits 0 resolved, 2 pending, 1 unknown."`
+	List    cli.ListCmd    `cmd:"" help:"List all registered ids."`
+	Purge   cli.PurgeCmd   `cmd:"" help:"Purge entries. Requires one of <id>, --all, or --resolved."`
+	Resolve cli.ResolveCmd `cmd:"" help:"Resolve an id (CLI escape hatch; use --force to bypass OwnerToken check)."`
 }
 
 func main() {

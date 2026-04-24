@@ -19,3 +19,8 @@ func RunList(out, errW io.Writer, path string) int {
 func RunPurge(out, errW io.Writer, path, id string, all, resolvedOnly bool) int {
 	return runPurge(out, errW, path, id, all, resolvedOnly)
 }
+
+// RunResolve re-exports runResolve for xtests (Phase 7).
+func RunResolve(out, errW io.Writer, path, id string, force bool) int {
+	return runResolve(out, errW, path, id, force)
+}
