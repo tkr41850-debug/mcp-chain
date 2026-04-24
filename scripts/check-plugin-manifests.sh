@@ -41,6 +41,14 @@ if ! grep -q -F '${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain' plugin/.mcp.json; then
   FAIL=1
 fi
 
+# WR-01 regression guard: reject OWNER placeholder in any manifest.
+for f in plugin/.claude-plugin/plugin.json plugin/.mcp.json .claude-plugin/marketplace.json; do
+  if grep -q -F 'OWNER' "$f" 2>/dev/null; then
+    echo "FAIL: $f still contains OWNER placeholder" >&2
+    FAIL=1
+  fi
+done
+
 if [ "$FAIL" -eq 0 ]; then
   echo "All manifest checks passed."
 fi

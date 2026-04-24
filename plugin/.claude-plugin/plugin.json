@@ -5,6 +5,6 @@
   "author": {
     "name": "mcp-chain contributors"
   },
-  "repository": "https://github.com/OWNER/mcp-chain",
+  "repository": "https://github.com/anthropics/mcp-chain",
   "keywords": ["mcp", "coordination", "chain", "session"]
 }
