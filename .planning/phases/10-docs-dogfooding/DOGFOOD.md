@@ -14,7 +14,7 @@ Linux and macOS each need a green run (or a documented deferral) before tagging.
 | 8 | Session B within 2 seconds prints `continue` and exits | Session B unblocked | ☐ | ☐ |
 | 9 | `/mcp-chain:list` from either session | Shows `otter` status `resolved` with a `resolved_at` timestamp | ☐ | ☐ |
 | 10 | `/mcp-chain:purge --resolved` | No output on success; subsequent `/mcp-chain:list` empty | ☐ | ☐ |
-| 11 | `/mcp-chain:purge` with no args | Errors with "requires --all, --resolved, or <id>" (CLI writes to stderr) | ☐ | ☐ |
+| 11 | `/mcp-chain:purge` with no args | Errors with `mcp-chain: purge requires <id>, --all, or --resolved` on stderr | ☐ | ☐ |
 | 12 | `/mcp-chain:wait nonexistent` | Exits 1 immediately with "unknown id" on stderr | ☐ | ☐ |
 | 13 | Inspect `~/.mcp-chain/state.json` OR `$XDG_STATE_HOME/mcp-chain/state.json` | File permissions `0600`, parent dir `0700`, JSON valid | ☐ | ☐ |
 | 14 | Kill Claude Code mid-wait in Session B, reopen, `/mcp-chain:wait <id-still-pending>` | Waiter resumes cleanly | ☐ | ☐ |

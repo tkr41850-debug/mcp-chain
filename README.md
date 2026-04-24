@@ -88,7 +88,7 @@ scripting and recovery:
 | `mcp-chain status <id>` | Query one entry | `0` resolved, `2` pending, `1` unknown / error |
 | `mcp-chain list` | Print all entries as a table | `0` always |
 | `mcp-chain resolve <id> [--force]` | Mark an ID resolved; `--force` bypasses the OwnerToken session check | `0` on success, `1` on error |
-| `mcp-chain purge <id> \| --all \| --resolved` | Delete entries; bare `purge` errors | `0` on success, `1` if no target given |
+| `mcp-chain purge <id> \| --all \| --resolved` | Delete entries; bare `purge` errors | `0` on success, `1` on error (bare invocation, unknown id, or I/O failure) |
 | `mcp-chain --version` | Print the binary version (e.g. `mcp-chain 0.1.0`) | `0` |
 
 ## Commands
