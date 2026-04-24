@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-04-23)
 
 ## Current Position
 
-Phase: 8 of 10 (Plugin Packaging & Bash Monitor) — COMPLETE
-Plan: 1 of 1 in current phase (COMPLETE)
-Status: Ready to advance to Phase 9
+Phase: 9 of 10 (CI Release, Cross-compile & Test Gates) — IN PROGRESS
+Plan: CONTEXT captured; planning next
+Status: Phase 9 context gathered (--auto); advancing to plan-phase
 Last activity: 2026-04-24 — Phase 8 Plan 01 complete: plugin manifests (plugin.json, marketplace.json, .mcp.json) + 4 slash-command prompts (reg/wait/list/purge, ≤30 words each) + chain-wait.sh bash 3.2 monitor + 5 shell gates + E2E smoke harness; WR-01 OWNER placeholder fixed; review 0 HI/1 ME (WR-02 $ARGUMENTS norm, deferred to Phase 10 docs); verifier 4/4 SC PASS; go.mod/go.sum byte-identical; stripped binary 7.82 MB
 
 Progress: [████████░░] 80%
