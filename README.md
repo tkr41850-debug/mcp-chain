@@ -16,7 +16,7 @@ one `flock(2)`.
 ### With Claude Code (recommended)
 
 ```
-/plugin install anthropics/mcp-chain
+/plugin install tkr41850-debug/mcp-chain
 ```
 
 Claude Code downloads the latest release binary for your OS/arch from GitHub
@@ -29,7 +29,7 @@ and monitor script.
 Install the binary:
 
 ```
-go install github.com/anthropics/mcp-chain/cmd/mcp-chain@latest
+go install github.com/tkr41850-debug/mcp-chain/cmd/mcp-chain@latest
 ```
 
 Then wire it into your MCP client. For a generic `.mcp.json`:
@@ -131,7 +131,7 @@ restart. If Claude Code does not list a restart option for your version,
 fully quit and relaunch Claude Code. Claude Code's plugin-reload surface has
 evolved across releases; either path reconnects the MCP server.
 
-To upgrade the plugin itself, re-run `/plugin install anthropics/mcp-chain`;
+To upgrade the plugin itself, re-run `/plugin install tkr41850-debug/mcp-chain`;
 Claude Code will fetch the latest release asset.
 
 ## Security notes

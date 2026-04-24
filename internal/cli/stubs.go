@@ -13,9 +13,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/anthropics/mcp-chain/internal/mcpserver"
-	"github.com/anthropics/mcp-chain/internal/statepath"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/mcpserver"
+	"github.com/tkr41850-debug/mcp-chain/internal/statepath"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // ExitCodeNotImplemented is returned by every Phase-1 subcommand stub.
@@ -26,7 +26,7 @@ import (
 const ExitCodeNotImplemented = 3
 
 // Version is the build version string. Set by release tooling via
-// -ldflags="-X github.com/anthropics/mcp-chain/internal/cli.Version=...".
+// -ldflags="-X github.com/tkr41850-debug/mcp-chain/internal/cli.Version=...".
 // Used by ServeCmd to populate the MCP Implementation.Version advertised
 // on initialize. Phase 9 wires the ldflags; for now this stays "dev".
 var Version = "dev"

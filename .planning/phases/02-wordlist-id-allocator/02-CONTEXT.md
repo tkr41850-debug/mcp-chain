@@ -53,7 +53,7 @@ Phase 1 established:
 - `.golangci.yml` — govet + staticcheck + forbidigo (bans fmt.Print* + net/http)
 - CI with size/startup/stdout/net/http gates
 
-No existing `internal/idgen` package. Module path: `github.com/anthropics/mcp-chain`.
+No existing `internal/idgen` package. Module path: `github.com/tkr41850-debug/mcp-chain`.
 
 </code_context>
 

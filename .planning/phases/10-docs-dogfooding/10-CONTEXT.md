@@ -30,7 +30,7 @@ Deliver the final v1 polish: a single `README.md` at repo root that lets a new u
 
 ### README Shape & Structure
 - **D-01:** Single `README.md` at repo root — one-page comprehensive doc (not multi-file `docs/`). Sections in this order: (1) Why / what it does, (2) Install (plugin path first, manual/binary path second), (3) Usage (slash commands `/mcp-chain:reg|wait|list|purge` first, manual CLI `status|list|purge|resolve` second), (4) State file path + permissions, (5) NFS / networked-filesystem caveat, (6) Upgrade / reload (`/mcp` list → restart), (7) Security notes (`$ARGUMENTS` shell-injection norm), (8) Troubleshooting, (9) License placeholder ("License TBD — see roadmap").
-- **D-02:** Plugin install is the primary path. `/plugin install anthropics/mcp-chain` (or equivalent) demonstrated first. `go install` + manual `.mcp.json` wiring is shown second as the "without Claude Code" fallback. Order matches audience in PROJECT.md (plugin-first).
+- **D-02:** Plugin install is the primary path. `/plugin install tkr41850-debug/mcp-chain` (or equivalent) demonstrated first. `go install` + manual `.mcp.json` wiring is shown second as the "without Claude Code" fallback. Order matches audience in PROJECT.md (plugin-first).
 - **D-03:** Usage examples use realistic word-IDs from the EFF list (e.g., `otter`, `acid`, `cable`) — not `foo`/`bar` placeholders.
 - **D-04:** Code blocks are copy-paste shell (not narrative with placeholders). Each install/usage example is a single fenced block the user can paste verbatim.
 
@@ -121,9 +121,9 @@ _No open todos matched Phase 10 scope._
 - README opens with a 2-line "What is it?" plus a 3-line "Why?" — matches the 5-line hook in PROJECT.md but tuned for an external reader with no prior context.
 - Install section shows a single copy-paste block for the plugin path:
   ```
-  /plugin install anthropics/mcp-chain
+  /plugin install tkr41850-debug/mcp-chain
   ```
-  followed by a "without Claude Code" block using `go install github.com/anthropics/mcp-chain/cmd/mcp-chain@latest`.
+  followed by a "without Claude Code" block using `go install github.com/tkr41850-debug/mcp-chain/cmd/mcp-chain@latest`.
 - Usage section shows a 2-session asciinema-style dialogue (plain text): Session A `/mcp-chain:reg "build passes"` → prints `otter`; Session B `/mcp-chain:wait otter`; Session A `/mcp-chain:resolve otter` (or Claude resolves via MCP); Session B prints `continue`. This is the canonical demo.
 - State-file section shows:
   ```

@@ -115,7 +115,7 @@ met — this is wording drift only.
 Run `bash -n plugin/scripts/chain-wait.sh` to syntax-check.
 ```
 
-For a user installed via `/plugin install anthropics/mcp-chain` (the
+For a user installed via `/plugin install tkr41850-debug/mcp-chain` (the
 recommended path in §Install), the script lives at
 `${CLAUDE_PLUGIN_ROOT}/plugin/scripts/chain-wait.sh`, not under their
 cwd. Running the suggested command from an arbitrary shell will fail

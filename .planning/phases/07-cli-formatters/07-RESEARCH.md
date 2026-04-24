@@ -226,7 +226,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // conditionMaxWidth caps the CONDITION column so a pathological
@@ -313,9 +313,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/anthropics/mcp-chain/internal/cli/format"
-	"github.com/anthropics/mcp-chain/internal/statepath"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/cli/format"
+	"github.com/tkr41850-debug/mcp-chain/internal/statepath"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // ListCmd prints all chain entries as an aligned table.
@@ -376,8 +376,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/anthropics/mcp-chain/internal/statepath"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/statepath"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // PurgeCmd deletes entries. Exactly one of <id>, --all, --resolved is
@@ -454,8 +454,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/anthropics/mcp-chain/internal/statepath"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/statepath"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // ResolveCmd marks an id resolved from the CLI.
@@ -747,8 +747,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/anthropics/mcp-chain/internal/cli/format"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/cli/format"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 func TestWriteTable_EmptyIn_EmptyOut(t *testing.T) {

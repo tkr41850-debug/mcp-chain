@@ -46,7 +46,7 @@ Key constraints:
 
 - Phase 1 scaffold: kong CLI, stdout discipline, lint gates, CI
 - Phase 2: `internal/idgen/` — pattern for small pure packages (wordlist.go + idgen.go + tests)
-- Module path: `github.com/anthropics/mcp-chain`
+- Module path: `github.com/tkr41850-debug/mcp-chain`
 - Go 1.23+; pure-Go constraint
 - Existing tests use `testify/require` v1.11.1
 

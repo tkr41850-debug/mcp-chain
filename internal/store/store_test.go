@@ -12,8 +12,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/anthropics/mcp-chain/internal/idgen"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/idgen"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // 32-char hex-like tokens. Match the MCP-server's 128-bit hex format in

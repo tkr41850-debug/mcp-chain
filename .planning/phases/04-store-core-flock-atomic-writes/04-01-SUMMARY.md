@@ -100,7 +100,7 @@ Total: 1167 LOC (~545 production, ~622 test).
 
 ```
 $ go test -race -count=1 -tags=integration -timeout=120s ./internal/store/...
-ok  github.com/anthropics/mcp-chain/internal/store  49.398s
+ok  github.com/tkr41850-debug/mcp-chain/internal/store  49.398s
 ```
 
 - **Unit tests (26)** — all rows 4-01…4-04 plus extra Purge-unknown-id
@@ -125,11 +125,11 @@ $ GOOS=windows GOARCH=amd64 go vet ./internal/store/...
 
 ```
 $ go test -race -count=1 -timeout=60s ./...
-ok  github.com/anthropics/mcp-chain/cmd/mcp-chain      14.374s
-ok  github.com/anthropics/mcp-chain/internal/cli       14.011s
-ok  github.com/anthropics/mcp-chain/internal/idgen      1.872s
-ok  github.com/anthropics/mcp-chain/internal/statepath  1.845s
-ok  github.com/anthropics/mcp-chain/internal/store      4.810s
+ok  github.com/tkr41850-debug/mcp-chain/cmd/mcp-chain      14.374s
+ok  github.com/tkr41850-debug/mcp-chain/internal/cli       14.011s
+ok  github.com/tkr41850-debug/mcp-chain/internal/idgen      1.872s
+ok  github.com/tkr41850-debug/mcp-chain/internal/statepath  1.845s
+ok  github.com/tkr41850-debug/mcp-chain/internal/store      4.810s
 ```
 
 ### Smoke checks (all green)

@@ -5,7 +5,7 @@ Linux and macOS each need a green run (or a documented deferral) before tagging.
 | # | Step | Done means | Linux | macOS |
 |---|------|------------|-------|-------|
 | 1 | Tag a snapshot tag locally: `git tag v0.1.0-rc1 && make release-snapshot` | `dist/` contains 6 archives + checksums.txt | ☐ | ☐ |
-| 2 | Install plugin from snapshot path: `/plugin install <local-path-to-plugin>` or push a `v0.1.0-rc1` tag + `/plugin install anthropics/mcp-chain@v0.1.0-rc1` | Claude Code reports "installed"; `/mcp` list shows `mcp-chain` | ☐ | ☐ |
+| 2 | Install plugin from snapshot path: `/plugin install <local-path-to-plugin>` or push a `v0.1.0-rc1` tag + `/plugin install tkr41850-debug/mcp-chain@v0.1.0-rc1` | Claude Code reports "installed"; `/mcp` list shows `mcp-chain` | ☐ | ☐ |
 | 3 | `mcp-chain --version` from a plain shell | Prints `mcp-chain 0.1.0` (NOT `dev`, NOT `0.0.1-snapshot-none`) | ☐ | ☐ |
 | 4 | Open Session A in Claude Code; run `/mcp-chain:reg build passes` | Response includes a single EFF-word ID (e.g., `otter`) | ☐ | ☐ |
 | 5 | Run `/mcp-chain:list` in Session A | Table shows `otter`, status `pending`, condition `build passes` | ☐ | ☐ |

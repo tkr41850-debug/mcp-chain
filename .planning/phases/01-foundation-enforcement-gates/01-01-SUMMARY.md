@@ -11,7 +11,7 @@ tags:
 dependency_graph:
   requires: []
   provides:
-    - go.mod (module github.com/anthropics/mcp-chain, kong v1.15.0)
+    - go.mod (module github.com/tkr41850-debug/mcp-chain, kong v1.15.0)
     - cmd/mcp-chain/main.go (binary entrypoint, stdout discipline, kong dispatch)
     - internal/cli/stubs.go (ServeCmd/StatusCmd/ListCmd/PurgeCmd types, ExitCodeNotImplemented=3)
     - internal/cli/stubs_test.go (subprocess exit code + stdout silence tests)
@@ -35,7 +35,7 @@ key_files:
     - internal/cli/stubs_test.go
   modified: []
 decisions:
-  - "Module path github.com/anthropics/mcp-chain (placeholder - no git remote configured; Phase 10 Docs will verify against real repo)"
+  - "Module path github.com/tkr41850-debug/mcp-chain (placeholder - no git remote configured; Phase 10 Docs will verify against real repo)"
   - "Go installed via manual tarball download (go1.23.8.linux-amd64) - apk required doas/tty not available in agent context"
   - "kong v1.15.0 resolved correctly; go.sum has 8 lines (4 deps x h1+go.mod entries)"
   - "stubs use fmt.Fprintln(os.Stderr) not slog — intentional per RESEARCH.md: one-line operator messages, not structured logging"
@@ -61,7 +61,7 @@ Go module initialized and CLI skeleton scaffolded with strict stdout discipline 
 
 ## Module Path
 
-**Chosen:** `github.com/anthropics/mcp-chain` (placeholder)
+**Chosen:** `github.com/tkr41850-debug/mcp-chain` (placeholder)
 
 **Disposition:** No git remote configured (`git remote get-url origin` returned "no-remote"). Using the placeholder documented in RESEARCH.md. Phase 10 (Docs) will verify against the actual GitHub repo once created.
 

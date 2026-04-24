@@ -14,8 +14,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/anthropics/mcp-chain/internal/statepath"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/statepath"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // ResolveCmd marks an id resolved from the CLI.

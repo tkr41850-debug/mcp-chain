@@ -136,7 +136,7 @@ None.
 
 ## Next Phase Readiness
 
-Phase 4 (store) can import `github.com/anthropics/mcp-chain/internal/statepath` immediately.
+Phase 4 (store) can import `github.com/tkr41850-debug/mcp-chain/internal/statepath` immediately.
 - Call `statepath.Resolve()` once at `store.Open()` time — the returned path has a guaranteed-existing parent directory at mode 0700
 - Store does NOT need to re-check parent-dir existence
 - `errors.Is(err, statepath.ErrHomeUnset)` for exit-code differentiation if needed

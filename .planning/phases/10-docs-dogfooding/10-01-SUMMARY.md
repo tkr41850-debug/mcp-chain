@@ -62,7 +62,7 @@ Six artifacts landed across five atomic commits:
 5. **README.md at repo root** (`c1de99a`, new, DIST-04) — 181 lines (cap 300). 11-section structure per D-01:
    - Title + tagline
    - Why (3 lines, external-reader framing)
-   - Install (plugin-first per D-02: `/plugin install anthropics/mcp-chain`; manual `go install github.com/anthropics/mcp-chain/cmd/mcp-chain@latest` + generic `.mcp.json` snippet using `"command": "mcp-chain"`)
+   - Install (plugin-first per D-02: `/plugin install tkr41850-debug/mcp-chain`; manual `go install github.com/tkr41850-debug/mcp-chain/cmd/mcp-chain@latest` + generic `.mcp.json` snippet using `"command": "mcp-chain"`)
    - Usage: 2-session demo with real EFF word `otter` (D-03/D-04); CLI subcommand table with exit codes (0/2/1 for status; 0/1 for resolve; 0 for list; 0 or 1 for purge)
    - Commands: 4-row table mapping `/mcp-chain:{reg,wait,list,purge}` → `plugin/commands/*.md` prompts
    - State file (XDG_STATE_HOME + ~/.mcp-chain fallback + 0600/0700 + atomic write)

@@ -52,7 +52,7 @@ Wire GitHub Actions CI (lint + build-and-gate jobs) and in-repo smoke tests for 
 === RUN   TestServeStdoutSilence
 --- PASS: TestServeStdoutSilence (3.71s)
 PASS
-ok  github.com/anthropics/mcp-chain/cmd/mcp-chain
+ok  github.com/tkr41850-debug/mcp-chain/cmd/mcp-chain
 ```
 
 ### Full Test Suite (go test ./...)

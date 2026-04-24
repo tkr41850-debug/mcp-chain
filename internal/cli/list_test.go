@@ -10,8 +10,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/anthropics/mcp-chain/internal/cli"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/cli"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 func TestRunList_Empty_Exit0_HintToStderr(t *testing.T) {

@@ -49,7 +49,7 @@ Phase 1 is a pure infrastructure phase: no business logic ships, but four enforc
 
 Three decisions need the planner's attention early because they shape every file touched:
 
-1. **Module path is `github.com/anthropics/mcp-chain`** — placeholder; explicitly flagged `[ASSUMED]` because the author's GitHub handle isn't resolved from repo context. Treat as `<TBD: replace with actual GitHub owner before `go mod init`>` in plans.
+1. **Module path is `github.com/tkr41850-debug/mcp-chain`** — placeholder; explicitly flagged `[ASSUMED]` because the author's GitHub handle isn't resolved from repo context. Treat as `<TBD: replace with actual GitHub owner before `go mod init`>` in plans.
 2. **Entry point at `cmd/mcp-chain/main.go`** — idiomatic for single-binary Go projects per [Go module layout](https://go.dev/doc/modules/layout) and already established in ARCHITECTURE.md. Do NOT put `main.go` at repo root.
 3. **Version injection via ldflags** — `-X main.version={{.Version}}` wired in Phase 1 with a `dev` fallback so `go build` (without ldflags) still works for local dev; GoReleaser in Phase 9 will fill in the real tag. Kong's `VersionFlag` reads from `kong.Vars{"version": version}`.
 
@@ -100,7 +100,7 @@ Three decisions need the planner's attention early because they shape every file
 
 ```bash
 # Phase 1 module init
-go mod init github.com/anthropics/mcp-chain  # placeholder - TBD replace with real owner
+go mod init github.com/tkr41850-debug/mcp-chain  # placeholder - TBD replace with real owner
 go mod tidy
 
 # Phase 1 runtime dep
@@ -214,7 +214,7 @@ import (
 
 	"github.com/alecthomas/kong"
 
-	"github.com/anthropics/mcp-chain/internal/cli"  // adjust module path
+	"github.com/tkr41850-debug/mcp-chain/internal/cli"  // adjust module path
 )
 
 // version is set by -ldflags="-X main.version=..." at build time.
@@ -425,12 +425,12 @@ Greenfield phase — **section not applicable**. No existing code, no existing d
 
 ### Pitfall 6: Placeholder module path leaks to released binaries
 
-**What goes wrong:** `go mod init github.com/anthropics/mcp-chain` uses a placeholder owner. Dev forgets to update before Phase 9 release; import paths throughout the codebase use the wrong path; the binary "works" but `go install github.com/real-owner/mcp-chain@latest` fails for external users.
+**What goes wrong:** `go mod init github.com/tkr41850-debug/mcp-chain` uses a placeholder owner. Dev forgets to update before Phase 9 release; import paths throughout the codebase use the wrong path; the binary "works" but `go install github.com/real-owner/mcp-chain@latest` fails for external users.
 
 **Why it happens:** Placeholders feel temporary; real owner is "obvious" at commit time and nobody checks.
 
 **How to avoid:**
-- `[ASSUMED: module path is github.com/anthropics/mcp-chain]` — flag in RESEARCH.md, planner adds a Phase 1 task "confirm actual module path with user before `go mod init`"; if not resolved, ship with `github.com/anthropics/mcp-chain` and `[ASSUMED]` tag in the plan so it's caught.
+- `[ASSUMED: module path is github.com/tkr41850-debug/mcp-chain]` — flag in RESEARCH.md, planner adds a Phase 1 task "confirm actual module path with user before `go mod init`"; if not resolved, ship with `github.com/tkr41850-debug/mcp-chain` and `[ASSUMED]` tag in the plan so it's caught.
 - Add a Phase 1 gate: grep `go.mod` first line and `cmd/mcp-chain/main.go` import paths match. Easy shell check.
 
 ## Code Examples
@@ -768,7 +768,7 @@ coverage.*
 
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
-| A1 | Module path is `github.com/anthropics/mcp-chain` | Installation, main.go import example | Import paths throughout codebase need find-replace; cheap at Phase 1 scale but grows with every phase. **Resolve with user on Phase 1 kickoff.** |
+| A1 | Module path is `github.com/tkr41850-debug/mcp-chain` | Installation, main.go import example | Import paths throughout codebase need find-replace; cheap at Phase 1 scale but grows with every phase. **Resolve with user on Phase 1 kickoff.** |
 | A2 | Go version floor is 1.23 | Standard Stack, ci.yml | Lower (1.22) would work for Phase 1 but fails when `go-sdk` v1.5.0 lands in Phase 5 (SDK declares 1.23 minimum per STACK.md). Setting 1.23 now is forward-compatible. LOW risk. |
 | A3 | `$EPOCHREALTIME` is available on GitHub-hosted ubuntu-latest runners | check-startup.sh | If bash is < 5, script exits with setup error. Fallback: `/usr/bin/time -f '%e'` or `hyperfine`. Verified `ubuntu-22.04` and `ubuntu-latest` (= 24.04 as of 2026) ship bash 5.x. LOW risk. |
 | A4 | GitHub Actions Ubuntu runner startup-time P95 of 5 runs is a stable measurement | check-startup.sh, Pitfall 4 | If flaky (rare false positives), Phase 1 may need re-tuning. Recommend monitoring first 10 CI runs post-Phase-1-close; if P95 variance > 30ms, swap to `hyperfine`. MEDIUM risk. |
@@ -779,8 +779,8 @@ coverage.*
 ## Open Questions (RESOLVED)
 
 1. **Actual GitHub owner for `go mod init` module path**
-   - What we know: Placeholder `github.com/anthropics/mcp-chain` is what ARCHITECTURE.md examples use; PROJECT.md says distribution is via "a public GitHub repo" but doesn't name the owner.
-   - RESOLVED: Plan 01-01 Task 1 derives the module path from `git remote get-url origin` at execution time. If no remote is set, use placeholder `github.com/anthropics/mcp-chain` and add a Phase 10 README task to re-verify the module path matches the real GitHub repo. No user prompt required.
+   - What we know: Placeholder `github.com/tkr41850-debug/mcp-chain` is what ARCHITECTURE.md examples use; PROJECT.md says distribution is via "a public GitHub repo" but doesn't name the owner.
+   - RESOLVED: Plan 01-01 Task 1 derives the module path from `git remote get-url origin` at execution time. If no remote is set, use placeholder `github.com/tkr41850-debug/mcp-chain` and add a Phase 10 README task to re-verify the module path matches the real GitHub repo. No user prompt required.
 
 2. **Should Phase 1 include a `test` job in CI, given there are no tests yet?**
    - What we know: REQUIREMENTS.md QA-03 says `go test -race ./...` runs in CI on push/PR. Traceability table maps QA-03 to Phase 9.

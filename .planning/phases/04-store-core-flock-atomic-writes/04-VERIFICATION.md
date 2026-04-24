@@ -67,7 +67,7 @@ $ go test -race -count=1 -tags=integration -timeout=120s -v \
 === RUN   TestStore_KillMidWriteLeavesCoherentState
 --- PASS: TestStore_KillMidWriteLeavesCoherentState (1.17s)
 PASS
-ok  github.com/anthropics/mcp-chain/internal/store  43.106s
+ok  github.com/tkr41850-debug/mcp-chain/internal/store  43.106s
 ```
 
 - `integration_test.go:114-158` — two `os.Executable()` subprocesses each register 100 entries; asserts `len(records) == 200` and all IDs unique via map dedup.

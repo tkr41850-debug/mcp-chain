@@ -10,8 +10,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/anthropics/mcp-chain/internal/statepath"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/statepath"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // PurgeCmd deletes entries. Exactly one of <id>, --all, --resolved is

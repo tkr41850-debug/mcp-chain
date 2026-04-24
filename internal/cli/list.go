@@ -10,9 +10,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/anthropics/mcp-chain/internal/cli/format"
-	"github.com/anthropics/mcp-chain/internal/statepath"
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/cli/format"
+	"github.com/tkr41850-debug/mcp-chain/internal/statepath"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // ListCmd prints all chain entries as an aligned table.

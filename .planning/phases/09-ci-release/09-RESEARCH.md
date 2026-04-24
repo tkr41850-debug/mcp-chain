@@ -208,7 +208,7 @@ release:
 
 **Caveats the planner must address:**
 - `LICENSE*` / `README*` glob — will fail silently if files don't exist in repo root. `README.md` lands in Phase 10. For Phase 9, either (a) create a placeholder `LICENSE` (not in scope per CONTEXT — D-06 accepts soft failure) or (b) add a `README.md` stub. **Recommendation: the dry-run job's assertion must allow missing `README`/`LICENSE`** until Phase 10; GoReleaser logs a warning but doesn't fail the archive step.
-- `release.github.owner` — placeholder; planner must confirm against actual GitHub org. If the repo is `anthropics/mcp-chain`, the value above is correct. If it's moved to another org, adjust.
+- `release.github.owner` — placeholder; planner must confirm against actual GitHub org. If the repo is `tkr41850-debug/mcp-chain`, the value above is correct. If it's moved to another org, adjust.
 
 ## Release Workflow Sketch
 

@@ -28,7 +28,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 const childEnvVar = "MCP_CHAIN_STORE_TEST_CHILD"

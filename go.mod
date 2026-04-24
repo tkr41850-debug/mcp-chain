@@ -1,4 +1,4 @@
-module github.com/anthropics/mcp-chain
+module github.com/tkr41850-debug/mcp-chain
 
 go 1.25.0
 

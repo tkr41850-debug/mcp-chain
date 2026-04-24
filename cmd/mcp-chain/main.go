@@ -13,7 +13,7 @@ import (
 
 	"github.com/alecthomas/kong"
 
-	"github.com/anthropics/mcp-chain/internal/cli"
+	"github.com/tkr41850-debug/mcp-chain/internal/cli"
 )
 
 // version is set by -ldflags="-X main.version=..." at build time.

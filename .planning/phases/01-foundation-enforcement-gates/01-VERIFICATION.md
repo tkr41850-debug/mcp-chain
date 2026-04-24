@@ -77,7 +77,7 @@ verdict: PHASE_COMPLETE
 
 | From | To | Via | Status |
 |------|-----|-----|--------|
-| `cmd/mcp-chain/main.go` | `internal/cli` | `import "github.com/anthropics/mcp-chain/internal/cli"` (line 13) | WIRED |
+| `cmd/mcp-chain/main.go` | `internal/cli` | `import "github.com/tkr41850-debug/mcp-chain/internal/cli"` (line 13) | WIRED |
 | `cmd/mcp-chain/main.go` | `os.Stderr` | `log.SetOutput(os.Stderr)` (line 38) | WIRED |
 | `cmd/mcp-chain/main.go` | `kong.VersionFlag` | `kong.Vars{"version": "mcp-chain " + version}` (line 47) → `kong.VersionFlag` tag at line 24 | WIRED |
 | `Makefile` | `scripts/check-*.sh` | `size-check`/`startup-check`/`stdout-check` targets call matching scripts | WIRED |
@@ -183,7 +183,7 @@ None. Source files are terse, comment-dense, and aligned with RESEARCH.md spec. 
 None — all Phase 1 deliverables have automated gates and those gates pass. The manual-only items listed in `01-VALIDATION.md` are:
 
 1. First real GitHub Actions run validating `$EPOCHREALTIME` availability on runner — this naturally occurs when the repo is first pushed to GitHub; not an actionable gap in Phase 1 code.
-2. Module path confirmation against real GitHub owner — scoped to Phase 10 (Docs). Phase 1 uses documented placeholder `github.com/anthropics/mcp-chain`.
+2. Module path confirmation against real GitHub owner — scoped to Phase 10 (Docs). Phase 1 uses documented placeholder `github.com/tkr41850-debug/mcp-chain`.
 
 Neither of these blocks Phase 1 closure.
 

@@ -28,7 +28,7 @@ GoReleaser.
 
 **README Shape & Structure**
 - **D-01:** Single `README.md` at repo root — one-page comprehensive doc (not multi-file `docs/`). Sections in this order: (1) Why / what it does, (2) Install (plugin path first, manual/binary path second), (3) Usage (slash commands `/mcp-chain:reg|wait|list|purge` first, manual CLI `status|list|purge|resolve` second), (4) State file path + permissions, (5) NFS / networked-filesystem caveat, (6) Upgrade / reload (`/mcp` list → restart), (7) Security notes (`$ARGUMENTS` shell-injection norm), (8) Troubleshooting, (9) License placeholder ("License TBD — see roadmap").
-- **D-02:** Plugin install is the primary path. `/plugin install anthropics/mcp-chain` (or equivalent) demonstrated first. `go install` + manual `.mcp.json` wiring is shown second as the "without Claude Code" fallback.
+- **D-02:** Plugin install is the primary path. `/plugin install tkr41850-debug/mcp-chain` (or equivalent) demonstrated first. `go install` + manual `.mcp.json` wiring is shown second as the "without Claude Code" fallback.
 - **D-03:** Usage examples use realistic word-IDs from the EFF list (e.g., `otter`, `acid`, `cable`) — not `foo`/`bar` placeholders.
 - **D-04:** Code blocks are copy-paste shell (not narrative with placeholders). Each install/usage example is a single fenced block.
 
@@ -188,13 +188,13 @@ No new libraries. Phase 10 is docs + shell. Reference the existing stack:
 ### With Claude Code (recommended)
 
 \`\`\`
-/plugin install anthropics/mcp-chain
+/plugin install tkr41850-debug/mcp-chain
 \`\`\`
 
 ### Without Claude Code
 
 \`\`\`
-go install github.com/anthropics/mcp-chain/cmd/mcp-chain@latest
+go install github.com/tkr41850-debug/mcp-chain/cmd/mcp-chain@latest
 \`\`\`
 
 Then add to your MCP client config:
@@ -288,7 +288,7 @@ Then add to your MCP client config:
 ### With Claude Code (recommended)
 
 \`\`\`
-/plugin install anthropics/mcp-chain
+/plugin install tkr41850-debug/mcp-chain
 \`\`\`
 
 Claude Code will download the latest release binary for your OS/arch from GitHub
@@ -299,7 +299,7 @@ Releases and install it under `${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain`.
 Install the binary:
 
 \`\`\`
-go install github.com/anthropics/mcp-chain/cmd/mcp-chain@latest
+go install github.com/tkr41850-debug/mcp-chain/cmd/mcp-chain@latest
 \`\`\`
 
 Then wire it into your MCP client. For a generic `.mcp.json`:
@@ -405,8 +405,8 @@ No state-of-the-art deltas. Phase 10 ships no library upgrades.
 
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
-| A1 | `/plugin install anthropics/mcp-chain` is the correct Claude Code install syntax for plugins hosted under `anthropics/mcp-chain` | §1 README skeleton §Install; CONTEXT.md D-02 references it | If syntax differs (e.g., needs a different verb or marketplace URL), README §2 example is wrong. Mitigation: verify against the live Claude Code plugin docs and against plugin-ref URL in canonical_refs when drafting README. Not researched in this session |
-| A2 | `go install github.com/anthropics/mcp-chain/cmd/mcp-chain@latest` resolves to the correct import path | §1 README skeleton §Install fallback | Module path is in go.mod — planner should `grep "^module" go.mod` before writing the block verbatim |
+| A1 | `/plugin install tkr41850-debug/mcp-chain` is the correct Claude Code install syntax for plugins hosted under `tkr41850-debug/mcp-chain` | §1 README skeleton §Install; CONTEXT.md D-02 references it | If syntax differs (e.g., needs a different verb or marketplace URL), README §2 example is wrong. Mitigation: verify against the live Claude Code plugin docs and against plugin-ref URL in canonical_refs when drafting README. Not researched in this session |
+| A2 | `go install github.com/tkr41850-debug/mcp-chain/cmd/mcp-chain@latest` resolves to the correct import path | §1 README skeleton §Install fallback | Module path is in go.mod — planner should `grep "^module" go.mod` before writing the block verbatim |
 | A3 | GitHub Releases latest asset URL pattern matches Phase 9 GoReleaser output | §6 tag procedure | Phase 9 SUMMARY confirms archive names. If user wants a direct-download install line in README, planner should cite the actual archive name format |
 | A4 | `/plugin reload` or equivalent exists in current Claude Code | Pitfall 5 | If not, README §6 should say "fully restart Claude Code" as the only supported reload path. Low impact — worst case the extra sentence is removed |
 
@@ -712,7 +712,7 @@ Linux and macOS each need a green run (or a documented deferral) before tagging.
 | # | Step | Done means | Linux | macOS |
 |---|------|------------|-------|-------|
 | 1 | Tag a snapshot tag locally: `git tag v0.1.0-rc1 && make release-snapshot` | `dist/` contains 6 archives + checksums.txt | ☐ | ☐ |
-| 2 | Install plugin from snapshot path: `/plugin install <local-path-to-plugin>` or push a `v0.1.0-rc1` tag + `/plugin install anthropics/mcp-chain@v0.1.0-rc1` | Claude Code reports "installed"; `/mcp` list shows `mcp-chain` | ☐ | ☐ |
+| 2 | Install plugin from snapshot path: `/plugin install <local-path-to-plugin>` or push a `v0.1.0-rc1` tag + `/plugin install tkr41850-debug/mcp-chain@v0.1.0-rc1` | Claude Code reports "installed"; `/mcp` list shows `mcp-chain` | ☐ | ☐ |
 | 3 | `mcp-chain --version` from a plain shell | Prints `mcp-chain 0.1.0` (NOT `dev`, NOT `0.0.1-snapshot-none`) | ☐ | ☐ |
 | 4 | Open Session A in Claude Code; run `/mcp-chain:reg build passes` | Response includes a single EFF-word ID (e.g., `otter`) | ☐ | ☐ |
 | 5 | Run `/mcp-chain:list` in Session A | Table shows `otter`, status `pending`, condition `build passes` | ☐ | ☐ |
@@ -771,7 +771,7 @@ git push origin v0.1.0
 **Gotchas:**
 - `v0.1.0` → GoReleaser `{{.Version}}` expands to `0.1.0` (it strips the leading `v`). The ldflag injection pattern is `-X main.version={{.Version}}` per `.goreleaser.yaml`. This is why step 3 of DOGFOOD.md asserts `mcp-chain 0.1.0` not `mcp-chain v0.1.0`.
 - Release workflow needs `permissions: contents: write` (already set per Phase 9 SUMMARY) — no action required.
-- Do NOT push `v0.1.0-rc1` to the public `anthropics/mcp-chain` repo unless you want the rc to be the "latest" advertised release. For dogfooding, prefer `make release-snapshot` (local only) or push to a fork.
+- Do NOT push `v0.1.0-rc1` to the public `tkr41850-debug/mcp-chain` repo unless you want the rc to be the "latest" advertised release. For dogfooding, prefer `make release-snapshot` (local only) or push to a fork.
 - If the first tag push fails mid-workflow (e.g., GoReleaser action breaks on a SDK issue), `git tag -d v0.1.0` locally + `git push --delete origin v0.1.0` to clean up, then retry.
 - No Homebrew tap, no Scoop manifest, no Docker image — per D-deferred. Users install via `/plugin install` or `go install`.
 
@@ -846,7 +846,7 @@ From ROADMAP.md Phase 10 Success Criteria:
 - XDG Base Directory Specification — referenced in `internal/statepath/statepath.go` package doc and CONTEXT.md
 
 ### Tertiary (LOW — needs validation at plan time)
-- A1..A4 in Assumptions Log — specifically `/plugin install anthropics/mcp-chain` syntax and `/plugin reload` verb existence
+- A1..A4 in Assumptions Log — specifically `/plugin install tkr41850-debug/mcp-chain` syntax and `/plugin reload` verb existence
 
 ## Metadata
 

@@ -78,7 +78,7 @@ Phase 1 is itself the Wave 0 for the project — all validation infrastructure i
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
 | First CI run on real GitHub Actions runner validates `$EPOCHREALTIME` is available in `check-startup.sh` | DIST-03 | Research assumption A3 — verified on bash 5.x / Ubuntu 22/24 via docs but not executed yet | After first push to the repo, check the Actions log for `scripts/check-startup.sh` success and note the reported `--version` duration |
-| Module path confirmation against real GitHub owner | CORE-01 (skeleton) | Research assumption A1 — code uses placeholder `github.com/anthropics/mcp-chain` if no remote is set | Phase 10 README task re-verifies the module path matches the real repo URL before first release |
+| Module path confirmation against real GitHub owner | CORE-01 (skeleton) | Research assumption A1 — code uses placeholder `github.com/tkr41850-debug/mcp-chain` if no remote is set | Phase 10 README task re-verifies the module path matches the real repo URL before first release |
 
 *All other phase behaviors have automated verification.*
 

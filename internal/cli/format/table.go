@@ -15,7 +15,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/anthropics/mcp-chain/internal/store"
+	"github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // conditionMaxWidth caps the CONDITION column so a pathological

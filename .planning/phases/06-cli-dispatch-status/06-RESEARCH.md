@@ -199,8 +199,8 @@ import (
     "io"
     "os"
 
-    "github.com/anthropics/mcp-chain/internal/statepath"
-    "github.com/anthropics/mcp-chain/internal/store"
+    "github.com/tkr41850-debug/mcp-chain/internal/statepath"
+    "github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 // StatusCmd reports the status of a registered id.
@@ -276,7 +276,7 @@ import (
 
     "github.com/alecthomas/kong"
 
-    "github.com/anthropics/mcp-chain/internal/cli"
+    "github.com/tkr41850-debug/mcp-chain/internal/cli"
 )
 
 var version = "dev"
@@ -500,7 +500,7 @@ import (
 
     "github.com/stretchr/testify/require"
 
-    "github.com/anthropics/mcp-chain/internal/store"
+    "github.com/tkr41850-debug/mcp-chain/internal/store"
 )
 
 func TestStatus_IntegrationExitCodes(t *testing.T) {
