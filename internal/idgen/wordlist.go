@@ -41,7 +41,9 @@ func init() {
 //
 // Any violation panics. A broken wordlist is a broken build.
 func parseAndValidate(raw string) []string {
-	// EFF file is LF-terminated ASCII; accept an optional single trailing newline.
+	// EFF file is LF-terminated ASCII; tolerate CRLF checkouts on Windows
+	// by stripping \r (belt-and-suspenders with .gitattributes eol=lf).
+	raw = strings.ReplaceAll(raw, "\r\n", "\n")
 	lines := strings.Split(strings.TrimRight(raw, "\n"), "\n")
 	if len(lines) != wordlistSize {
 		panic(fmt.Sprintf("idgen: wordlist line count = %d, want %d", len(lines), wordlistSize))

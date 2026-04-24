@@ -49,12 +49,11 @@ jobs:
       - name: Stdout silence gate (serve </dev/null writes 0 bytes to stdout)
         run: ./scripts/check-stdout-silence.sh ./mcp-chain
 
-      - name: Ban net/http import (MCP-01 prep)
-        run: |
-          if go list -f '{{ join .Deps "\n" }}' ./... | grep -q '^net/http$'; then
-            echo "ERROR: net/http is in the dependency graph. stdio-only; see MCP-01."
-            exit 1
-          fi
+      # net/http ban gate removed per MCP-01 (2026-04-24): the official
+      # modelcontextprotocol/go-sdk v1.5.0 transitively imports net/http via
+      # its SSE/streamable transport files. The stdio transport the binary
+      # uses at runtime does not actually reach those code paths, but the
+      # static dependency graph does. Accepted upstream behavior.
 
       - name: Smoke chain-wait (Phase 8 plugin monitor)
         run: ./scripts/smoke-chain-wait.sh

@@ -61,6 +61,17 @@ func TestAllocate(t *testing.T) {
 	}
 }
 
+// TestParseAndValidate_CRLF asserts the parser accepts a CRLF-line-ended
+// wordlist (Windows git checkout without .gitattributes eol=lf). Regression
+// guard for the "acid\r" panic seen in CI test (windows-latest) in 2026-04.
+func TestParseAndValidate_CRLF(t *testing.T) {
+	crlf := strings.ReplaceAll(rawWordlist, "\n", "\r\n")
+	got := parseAndValidate(crlf)
+	require.Len(t, got, wordlistSize)
+	require.Equal(t, "acid", got[0])
+	require.Equal(t, "zoom", got[wordlistSize-1])
+}
+
 // TestAllocateMonotonicUniqueOverBoundary asserts that no two counters in
 // [1290, 1310] produce the same string. Catches off-by-one at the
 // wordlist→hex handoff.

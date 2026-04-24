@@ -1,0 +1,6 @@
+# Enforce LF line endings for files that the binary parses at runtime.
+# The embedded EFF wordlist is split on "\n"; CRLF checkouts on Windows
+# corrupt the parse with a trailing \r in each word.
+*.txt text eol=lf
+*.sh text eol=lf
+*.go text eol=lf
