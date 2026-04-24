@@ -39,3 +39,17 @@ clean:
 .PHONY: tidy
 tidy:
 	go mod tidy
+
+.PHONY: release-snapshot
+release-snapshot:
+	goreleaser release --snapshot --clean --skip=publish
+	@echo "--- dist/ contents:"
+	@ls -la dist/
+	@test $$(ls dist/*.tar.gz 2>/dev/null | wc -l) -eq 4 || (echo "ERROR: expected 4 .tar.gz in dist/" && exit 1)
+	@test $$(ls dist/*.zip 2>/dev/null | wc -l) -eq 2 || (echo "ERROR: expected 2 .zip in dist/" && exit 1)
+	@test -f dist/checksums.txt || (echo "ERROR: dist/checksums.txt missing" && exit 1)
+	@echo "Snapshot release OK: 4 tar.gz + 2 zip + checksums.txt"
+
+.PHONY: ci-local
+ci-local: lint build size-check startup-check stdout-check test
+	@echo "--- ci-local: all Linux gates green"
