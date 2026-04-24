@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -93,5 +94,81 @@ func TestMcpJSON_Valid(t *testing.T) {
 	for _, forbidden := range []string{"/Users/", "/home/", "C:\\", "\"npm\"", "\"uvx\"", "\"node\"", "\"python\""} {
 		require.NotContains(t, rawStr, forbidden,
 			".mcp.json MUST NOT contain %q (LD-2 reject-list)", forbidden)
+	}
+}
+
+// stripFrontmatter returns the body of a commands/*.md file with YAML
+// frontmatter (between --- markers) removed. Mirrors the awk logic in
+// scripts/check-prompt-wordcount.sh.
+func stripFrontmatter(raw string) string {
+	lines := strings.Split(raw, "\n")
+	n := 0
+	var body []string
+	for _, line := range lines {
+		if line == "---" {
+			n++
+			continue
+		}
+		if n == 1 {
+			continue // inside frontmatter
+		}
+		body = append(body, line)
+	}
+	return strings.Join(body, "\n")
+}
+
+// countWords is a whitespace tokenizer (runs of non-whitespace).
+func countWords(s string) int {
+	return len(strings.Fields(s))
+}
+
+func readPrompt(t *testing.T, name string) string {
+	t.Helper()
+	path := filepath.Join(repoRoot(t), "plugin", "commands", name)
+	data, err := os.ReadFile(path)
+	require.NoError(t, err)
+	return string(data)
+}
+
+func TestPromptReg_MentionsRegisterTool(t *testing.T) {
+	raw := readPrompt(t, "reg.md")
+	body := stripFrontmatter(raw)
+	require.LessOrEqual(t, countWords(body), 30, "LD-3 word budget")
+	require.Contains(t, body, "mcp-chain__register", "must name the MCP tool (LD-3)")
+	require.NotContains(t, raw, "/chain-reg", "no double-prefix literal (LD-14)")
+	require.Contains(t, raw, "description:", "frontmatter description field (LD-10)")
+	require.Contains(t, raw, "argument-hint:", "frontmatter argument-hint (LD-10)")
+}
+
+func TestPromptWait_InvokesChainWaitScript(t *testing.T) {
+	raw := readPrompt(t, "wait.md")
+	body := stripFrontmatter(raw)
+	require.LessOrEqual(t, countWords(body), 30)
+	require.Contains(t, body, "${CLAUDE_PLUGIN_ROOT}/scripts/chain-wait.sh", "LD-9 wiring")
+	require.Contains(t, body, "MCP_CHAIN_BIN=", "LD-9 env override")
+	require.Contains(t, body, "$ARGUMENTS", "pass-through arg substitution")
+	require.NotContains(t, raw, "/chain-wait ", "no double-prefix slash-command literal (LD-14)")
+}
+
+func TestPromptList_InvokesBinaryList(t *testing.T) {
+	raw := readPrompt(t, "list.md")
+	body := stripFrontmatter(raw)
+	require.LessOrEqual(t, countWords(body), 30)
+	require.Contains(t, body, "${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain")
+	require.Contains(t, body, " list")
+	require.NotContains(t, raw, "/chain-list", "no double-prefix literal (LD-14)")
+}
+
+func TestPromptPurge_TrustsBinaryForBareArgs(t *testing.T) {
+	raw := readPrompt(t, "purge.md")
+	body := stripFrontmatter(raw)
+	require.LessOrEqual(t, countWords(body), 30)
+	require.Contains(t, body, "purge $ARGUMENTS")
+	require.NotContains(t, raw, "/chain-purge", "no double-prefix literal (LD-14)")
+	// LD-11: prompt MUST NOT re-enforce arg-shape. Check for common
+	// re-enforcement phrases that would violate the <=30-word budget anyway.
+	for _, forbidden := range []string{"refuse", "if no argument provided", "you must provide"} {
+		require.NotContains(t, strings.ToLower(body), forbidden,
+			"LD-11: binary enforces arg-shape, prompt does not")
 	}
 }
