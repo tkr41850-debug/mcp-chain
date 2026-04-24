@@ -1,7 +1,9 @@
 // Package cli holds CLI subcommand types wired into the kong grammar at
 // cmd/mcp-chain/main.go. Phase 1 implements every command as a stub that
 // exits with ExitCodeNotImplemented after writing a one-line operator
-// message to stderr; Phases 5/6/7 replace the stub bodies with real logic.
+// message to stderr; Phase 5 wired serve, Phase 6 wired status (see
+// status.go), Phase 7 (list/purge/resolve) replaces the remaining stub
+// bodies with real logic.
 package cli
 
 import (
@@ -53,18 +55,6 @@ func (c *ServeCmd) Run() error {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 	return mcpserver.Run(ctx, st, token, Version)
-}
-
-// StatusCmd reports the status of a registered id (Phase 6 target).
-// Real exit codes will be 0 (resolved), 1 (unknown), 2 (pending).
-type StatusCmd struct {
-	ID string `arg:"" help:"Id to check."`
-}
-
-func (c *StatusCmd) Run() error {
-	fmt.Fprintln(os.Stderr, "mcp-chain status: not implemented (Phase 6)")
-	os.Exit(ExitCodeNotImplemented)
-	return nil
 }
 
 // ListCmd prints a human-readable table of all entries (Phase 7 target).
