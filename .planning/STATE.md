@@ -77,5 +77,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-24
-Stopped at: Phase 6 Plan 01 complete — runStatus exit-code decision tree (0/2/1) wired under kong; 5 unit tests + 7 integration tests green under -race; 10-concurrent timing observed 525ms (<1s LD-7 threshold); CORE-01 closed; stripped binary 7.4 MB
+Stopped at: Phase 6 Plan 01 complete — runStatus exit-code decision tree (0/2/1) wired under kong; 5 unit tests + 7 integration tests green under -race; 10-concurrent timing observed 500–700ms isolated, bound relaxed from 1s → 2s after code-review observed 1.26s flake under full -race suite load (research §OQ-2 pre-authorized); CORE-01 closed; stripped binary 7.4 MB
 Resume file: None — ready for Phase 7 (list/purge/resolve CLI formatters)
