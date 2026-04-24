@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-23)
 
 **Core value:** N Claude Code sessions can coordinate via shared locks — register in one, any number of others wait on it, resolve when ready — with minimal overhead (fast startup, low memory, terse tool prompts, small binary).
-**Current focus:** Phase 4 — Store Core, Flock & Atomic Writes
+**Current focus:** Phase 7 — CLI Formatters (list, purge, resolve)
 
 ## Current Position
 
-Phase: 4 of 10 (Store Core, Flock & Atomic Writes)
+Phase: 6 of 10 (CLI Dispatch & Status Subcommand) — COMPLETE
 Plan: 1 of 1 in current phase (COMPLETE)
-Status: Executing
-Last activity: 2026-04-23 — Phase 4 Plan 01 complete: internal/store with flock + atomic writes + OwnerToken; 28 tests green (26 unit + 2 integration); Windows cross-compile green
+Status: Ready to advance to Phase 7
+Last activity: 2026-04-24 — Phase 6 Plan 01 complete: runStatus exit-code decision tree (0/2/1) + kong.Writers stderr routing + manual --version pre-parse; 12 tests added (5 unit + 7 integration); CORE-01 closed
 
-Progress: [████░░░░░░] 40%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: ~11 min
-- Total execution time: ~34 min
+- Total plans completed: 5
+- Average duration: ~12 min
+- Total execution time: ~61 min
 
 **By Phase:**
 
@@ -30,10 +30,12 @@ Progress: [████░░░░░░] 40%
 | 02 | 1 | ~5 min | ~5 min |
 | 03 | 1 | ~4 min | ~4 min |
 | 04 | 1 | ~25 min | ~25 min |
+| 05 | 1 | (unrecorded) | — |
+| 06 | 1 | ~20 min | ~20 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min)
-- Trend: ↑ (larger phase, integration tests)
+- Last 5 plans: 02-01 (5 min), 03-01 (4 min), 04-01 (25 min), 05-01 (—), 06-01 (20 min)
+- Trend: ↑ (larger phases with integration suites)
 
 *Updated after each plan completion*
 
@@ -54,6 +56,9 @@ Recent decisions affecting current work (from research synthesis 2026-04-23):
 - License deferred — no phase allocated
 - statepath: fallback is `~/.mcp-chain/` (dot-dir) not strict-XDG `~/.local/state/` — aligned with PROJECT.md/REQUIREMENTS.md CORE-06; XDG-aware users set `$XDG_STATE_HOME`
 - statepath: os.Getenv("HOME") directly (not os.UserHomeDir) — project policy for NSS-free startup path; no os/user in dep graph confirmed via go list -deps
+- cli/status (Phase 6): exit-code contract locked 0/2/1 (NOT 0/1/2); `runStatus(out, errW io.Writer, path, id string) int` pure over writers + path (no env reads); `StatusCmd.Run` uses `os.Exit(code)` not kong `ExitCoder` so pending row keeps stderr empty
+- cli/main (Phase 6): `kong.Writers(os.Stderr, os.Stderr)` + manual `--version` pre-parse replaces `kong.VersionFlag` (which hard-codes `app.Stdout`, incompatible with the Writers redirect); `--version` remains the ONE sanctioned stdout write in the CLI surface
+- cli/status (Phase 6, LD-6): `ErrSchemaVersion` / `ErrCorruptJSON` fold into generic exit 1 — no distinct exit code for schema mismatch
 
 ### Pending Todos
 
@@ -71,6 +76,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-23
-Stopped at: Phase 4 Plan 01 complete — internal/store with gofrs/flock v0.12.1 + renameio/v2 v2.0.1; Register/Resolve/Get/List/Purge; 28 tests green under -race (26 unit + 2 cross-process integration); Windows cross-compile green; OwnerToken stamped on Register + constant-time compared on Resolve with --force bypass
-Resume file: None
+Last session: 2026-04-24
+Stopped at: Phase 6 Plan 01 complete — runStatus exit-code decision tree (0/2/1) wired under kong; 5 unit tests + 7 integration tests green under -race; 10-concurrent timing observed 525ms (<1s LD-7 threshold); CORE-01 closed; stripped binary 7.4 MB
+Resume file: None — ready for Phase 7 (list/purge/resolve CLI formatters)

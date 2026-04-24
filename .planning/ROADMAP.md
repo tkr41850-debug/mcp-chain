@@ -92,7 +92,8 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. `mcp-chain status <id>` exits 0 on resolved, 2 on pending, 1 on unknown ID — asserted by a table-driven integration test invoking the compiled binary
   2. Status reads use `LOCK_SH`, so 10 concurrent `status` processes against the same state file complete in under one second wall-time with no serialization (timing test)
   3. Unknown subcommands, bad arguments, and `--help` write to stderr (not stdout); `status` writes nothing to stdout beyond its single-line result
-**Plans**: TBD
+**Plans**: 1 plan (1 complete, 0 remaining)
+  - [x] 06-01-PLAN.md — runStatus exit-code decision tree (0/2/1) + kong.Writers stderr routing + manual --version pre-parse (CORE-01) — SUMMARY: 06-01-SUMMARY.md
 
 ### Phase 7: CLI Formatters (list, purge, resolve)
 **Goal**: Administrative subcommands `list`, `purge`, and CLI-only `resolve --force` provide human-readable output and safe cleanup semantics over the shared store, with formatters isolated so they do not leak into core.

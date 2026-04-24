@@ -97,7 +97,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | Phase 1 (skeleton) + Phase 6 (complete) | Pending |
+| CORE-01 | Phase 1 (skeleton) + Phase 6 (status) + Phase 7 (list/purge) | Partial (status done in Phase 6) |
 | CORE-02 | Phase 5 | Pending |
 | CORE-03 | Phase 5 | Pending |
 | CORE-04 | Phase 4 | Pending |
