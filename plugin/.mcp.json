@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mcp-chain": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/bin/mcp-chain",
+      "args": ["serve"]
+    }
+  }
+}

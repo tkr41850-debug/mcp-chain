@@ -1,0 +1,10 @@
+{
+  "name": "mcp-chain",
+  "version": "1.0.0",
+  "description": "Register/wait/resolve coordination primitive across N Claude Code sessions.",
+  "author": {
+    "name": "mcp-chain contributors"
+  },
+  "repository": "https://github.com/OWNER/mcp-chain",
+  "keywords": ["mcp", "coordination", "chain", "session"]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "mcp-chain-marketplace",
+  "owner": {
+    "name": "mcp-chain contributors"
+  },
+  "plugins": [
+    {
+      "name": "mcp-chain",
+      "source": "./plugin",
+      "description": "Register/wait/resolve coordination primitive across N Claude Code sessions."
+    }
+  ]
+}
