@@ -6,6 +6,6 @@ import "io"
 // cli_test package (e.g. status_test.go). Keeping runStatus
 // unexported in the production API while making it testable from
 // an xtest preserves the public-API surface.
-var RunStatus = func(out, errW io.Writer, path, id string) int {
+func RunStatus(out, errW io.Writer, path, id string) int {
 	return runStatus(out, errW, path, id)
 }
