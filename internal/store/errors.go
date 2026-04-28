@@ -34,3 +34,13 @@ var ErrCorruptJSON = errors.New("store: corrupt state file")
 // targets set (or more than one) — exactly one of ID / All / Resolved
 // must be true.
 var ErrPurgeArgRequired = errors.New("store: purge requires --id, --all, or --resolved")
+
+// ErrIDTaken is returned by RegisterWithID when the caller-supplied id
+// is already present in state.json (status irrelevant — pending and
+// resolved both block re-registration).
+var ErrIDTaken = errors.New("store: id already registered")
+
+// ErrInvalidID is returned by RegisterWithID when the caller-supplied
+// id fails validation: must be 1–64 chars, start with [a-z0-9], contain
+// only [a-z0-9._-]. Wrapped messages name the offending id.
+var ErrInvalidID = errors.New("store: invalid id")

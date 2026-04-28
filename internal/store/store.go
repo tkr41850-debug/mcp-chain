@@ -87,6 +87,59 @@ func (s *Store) Register(ownerToken, condition string) (string, error) {
 	return id, nil
 }
 
+// RegisterWithID creates a new pending record with a caller-supplied
+// id (the slug). Used by callers that need a stable, externally-known
+// id — e.g. a Claude Code plan slug. Differs from Register in two
+// ways: (1) id comes from the caller, not idgen.Allocate; (2) the
+// monotonic Counter is NOT incremented (the wordlist allocation space
+// is independent of the slug namespace).
+//
+// Returns ErrInvalidID if id fails validation (1–64 chars, starts with
+// [a-z0-9], contains only [a-z0-9._-]) and ErrIDTaken if a record with
+// that id already exists. Validation runs before the lock so an
+// invalid id never touches state.json.
+func (s *Store) RegisterWithID(ownerToken, id, condition string) error {
+	if err := validateID(id); err != nil {
+		return err
+	}
+	return s.withLockedState(func(st *state) error {
+		if _, ok := st.Records[id]; ok {
+			return fmt.Errorf("%w: %q", ErrIDTaken, id)
+		}
+		st.Records[id] = record{
+			ID:         id,
+			Condition:  condition,
+			Status:     statusPending,
+			OwnerToken: ownerToken,
+			CreatedAt:  time.Now().UTC(),
+			ResolvedAt: nil,
+		}
+		return nil
+	})
+}
+
+// validateID enforces the slug grammar accepted by RegisterWithID:
+// 1–64 chars, first char [a-z0-9], remaining chars [a-z0-9._-].
+// Hand-rolled to avoid pulling regexp into production code (see
+// CLAUDE.md "stdlib-first"); table-tested.
+func validateID(id string) error {
+	n := len(id)
+	if n == 0 || n > 64 {
+		return fmt.Errorf("%w: length %d (must be 1–64)", ErrInvalidID, n)
+	}
+	for i := 0; i < n; i++ {
+		c := id[i]
+		ok := (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')
+		if i > 0 {
+			ok = ok || c == '.' || c == '_' || c == '-'
+		}
+		if !ok {
+			return fmt.Errorf("%w: %q (byte %d: %q)", ErrInvalidID, id, i, c)
+		}
+	}
+	return nil
+}
+
 // Resolve marks the record with the given id as resolved. Returns
 // ErrUnknownID if no such record, ErrAlreadyResolved if it's already
 // resolved, and ErrNotOwner if ownerToken does not match the stored

@@ -31,6 +31,19 @@ func resolveHandler(st *store.Store, ownerToken string) func(ctx context.Context
 	}
 }
 
+// registerWithIDHandler returns the typed handler closure for the
+// `register_with_id` tool. Unlike registerHandler, the caller supplies
+// the id directly (used by callers that key the lock to an external
+// slug — e.g. a Claude Code plan).
+func registerWithIDHandler(st *store.Store, ownerToken string) func(ctx context.Context, req *mcp.CallToolRequest, in RegisterWithIDIn) (*mcp.CallToolResult, RegisterWithIDOut, error) {
+	return func(ctx context.Context, req *mcp.CallToolRequest, in RegisterWithIDIn) (*mcp.CallToolResult, RegisterWithIDOut, error) {
+		if err := st.RegisterWithID(ownerToken, in.ID, in.Condition); err != nil {
+			return mapStoreError(err), RegisterWithIDOut{}, nil
+		}
+		return nil, RegisterWithIDOut{}, nil
+	}
+}
+
 // serverName is the Implementation.Name advertised on initialize.
 const serverName = "mcp-chain"
 
@@ -52,6 +65,10 @@ func Run(ctx context.Context, st *store.Store, ownerToken, version string) error
 	mcp.AddTool(server,
 		&mcp.Tool{Name: "resolve", Description: resolveDescription},
 		resolveHandler(st, ownerToken),
+	)
+	mcp.AddTool(server,
+		&mcp.Tool{Name: "register_with_id", Description: registerWithIDDescription},
+		registerWithIDHandler(st, ownerToken),
 	)
 
 	return server.Run(ctx, &mcp.StdioTransport{})

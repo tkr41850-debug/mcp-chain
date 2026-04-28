@@ -43,6 +43,10 @@ func mapStoreError(err error) *mcp.CallToolResult {
 		return errorContent("not_owner", "this session did not register this lock")
 	case errors.Is(err, store.ErrSchemaVersion):
 		return errorContent("schema_error", err.Error())
+	case errors.Is(err, store.ErrIDTaken):
+		return errorContent("id_taken", err.Error())
+	case errors.Is(err, store.ErrInvalidID):
+		return errorContent("invalid_id", err.Error())
 	default:
 		return errorContent("internal", err.Error())
 	}

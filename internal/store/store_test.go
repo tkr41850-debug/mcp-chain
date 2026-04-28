@@ -398,6 +398,165 @@ func TestStore_PurgeRequiresTarget(t *testing.T) {
 }
 
 // -----------------------------------------------------------------------
+// reg-plan slice 1 — RegisterWithID (caller-supplied id)
+// -----------------------------------------------------------------------
+
+func TestStore_RegisterWithID_HappyPath(t *testing.T) {
+	s, path := newStore(t)
+
+	require.NoError(t, s.RegisterWithID(tokenA, "phase-05", "plan complete"))
+
+	r, err := s.Get("phase-05")
+	require.NoError(t, err)
+	require.Equal(t, "phase-05", r.ID)
+	require.Equal(t, "plan complete", r.Condition)
+	require.Equal(t, "pending", r.Status)
+	require.Equal(t, tokenA, r.OwnerToken)
+
+	// Counter must NOT be incremented — slug namespace is independent
+	// of the wordlist allocation counter.
+	disk := readStateFile(t, path)
+	require.Equal(t, float64(0), disk["counter"],
+		"RegisterWithID must not increment counter")
+}
+
+func TestStore_RegisterWithID_DoesNotConsumeWordlistSlot(t *testing.T) {
+	s, _ := newStore(t)
+
+	require.NoError(t, s.RegisterWithID(tokenA, "phase-05", "cond"))
+
+	// First auto-allocate after RegisterWithID must still be words[0].
+	id, err := s.Register(tokenA, "next")
+	require.NoError(t, err)
+	require.Equal(t, "acid", id,
+		"RegisterWithID must not advance the wordlist counter")
+}
+
+func TestStore_RegisterWithID_CollisionWithPriorRegisterWithID(t *testing.T) {
+	s, _ := newStore(t)
+	require.NoError(t, s.RegisterWithID(tokenA, "phase-05", "first"))
+
+	err := s.RegisterWithID(tokenA, "phase-05", "second")
+	require.Truef(t, errors.Is(err, store.ErrIDTaken),
+		"second RegisterWithID with same id → ErrIDTaken, got %v", err)
+}
+
+func TestStore_RegisterWithID_CollisionWithAutoAllocated(t *testing.T) {
+	s, _ := newStore(t)
+
+	// Auto-allocate gives us "acid" first.
+	id, err := s.Register(tokenA, "auto")
+	require.NoError(t, err)
+	require.Equal(t, "acid", id)
+
+	err = s.RegisterWithID(tokenA, "acid", "manual")
+	require.Truef(t, errors.Is(err, store.ErrIDTaken),
+		"RegisterWithID over an auto-allocated id → ErrIDTaken, got %v", err)
+}
+
+func TestStore_RegisterWithID_CollisionPreservesOriginalRecord(t *testing.T) {
+	s, _ := newStore(t)
+	require.NoError(t, s.RegisterWithID(tokenA, "phase-05", "first"))
+
+	// Collision attempt with a different owner and condition.
+	err := s.RegisterWithID(tokenB, "phase-05", "second")
+	require.Truef(t, errors.Is(err, store.ErrIDTaken), "got %v", err)
+
+	// Original record's owner and condition must be unchanged.
+	r, err := s.Get("phase-05")
+	require.NoError(t, err)
+	require.Equal(t, "first", r.Condition)
+	require.Equal(t, tokenA, r.OwnerToken)
+}
+
+func TestStore_RegisterWithID_OwnerSemanticsMatchRegister(t *testing.T) {
+	s, _ := newStore(t)
+	require.NoError(t, s.RegisterWithID(tokenA, "phase-05", "cond"))
+
+	// Wrong owner cannot resolve.
+	err := s.Resolve("phase-05", tokenB, store.ResolveOptions{})
+	require.Truef(t, errors.Is(err, store.ErrNotOwner),
+		"wrong owner → ErrNotOwner, got %v", err)
+
+	// Correct owner can resolve.
+	require.NoError(t, s.Resolve("phase-05", tokenA, store.ResolveOptions{}))
+
+	r, err := s.Get("phase-05")
+	require.NoError(t, err)
+	require.Equal(t, "resolved", r.Status)
+}
+
+func TestStore_RegisterWithID_Validation(t *testing.T) {
+	cases := []struct {
+		name string
+		id   string
+	}{
+		{"empty", ""},
+		{"too long (65)", strings.Repeat("a", 65)},
+		{"uppercase", "Phase-05"},
+		{"leading dash", "-phase-05"},
+		{"leading dot", ".phase"},
+		{"leading underscore", "_phase"},
+		{"space", "phase 05"},
+		{"slash", "phase/05"},
+		{"colon", "phase:05"},
+		{"unicode", "phase-é"},
+		{"only dots", "..."},
+		{"trailing newline", "phase-05\n"},
+	}
+	for _, tc := range cases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			s, _ := newStore(t)
+			err := s.RegisterWithID(tokenA, tc.id, "cond")
+			require.Truef(t, errors.Is(err, store.ErrInvalidID),
+				"id %q must yield ErrInvalidID, got %v", tc.id, err)
+		})
+	}
+}
+
+func TestStore_RegisterWithID_ValidationDoesNotTouchState(t *testing.T) {
+	s, path := newStore(t)
+
+	// First register a valid record to ensure state.json exists with counter=0.
+	require.NoError(t, s.RegisterWithID(tokenA, "phase-05", "cond"))
+
+	disk := readStateFile(t, path)
+	preCounter := disk["counter"]
+
+	// Now an invalid id — must error without modifying state.
+	err := s.RegisterWithID(tokenA, "INVALID", "cond")
+	require.Truef(t, errors.Is(err, store.ErrInvalidID), "got %v", err)
+
+	disk = readStateFile(t, path)
+	require.Equal(t, preCounter, disk["counter"],
+		"invalid id must not modify counter")
+	records := disk["records"].(map[string]any)
+	require.Len(t, records, 1, "invalid id must not add records")
+}
+
+func TestStore_RegisterWithID_ValidIDsAccepted(t *testing.T) {
+	cases := []string{
+		"a",
+		"0",
+		"phase-05",
+		"phase_05",
+		"phase.05",
+		"a.b-c_d",
+		"0abc",
+		strings.Repeat("a", 64), // exactly at limit
+	}
+	for _, id := range cases {
+		id := id
+		t.Run(id, func(t *testing.T) {
+			s, _ := newStore(t)
+			require.NoError(t, s.RegisterWithID(tokenA, id, "cond"),
+				"id %q should be accepted", id)
+		})
+	}
+}
+
+// -----------------------------------------------------------------------
 // SC #1, #4 — same-process goroutine concurrency (Task 2.1)
 // -----------------------------------------------------------------------
 
