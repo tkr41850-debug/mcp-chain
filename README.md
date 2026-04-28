@@ -11,6 +11,23 @@ short word-ID it can publish and any number of other sessions a way to block
 on that ID until the first session resolves it. One binary, one JSON file,
 one `flock(2)`.
 
+## Alternatives
+
+mcp-chain is one of several ways to coordinate Claude Code work. If you only
+need a parent delegating to one isolated task, Claude Code's built-in
+subagents are simpler. For a shared task list under one coordinator, the
+experimental Agent Teams feature covers that. Other MCP servers —
+[claude-presence](https://github.com/garniergeorges/claude-presence),
+[mclaude](https://github.com/AnastasiyaW/mclaude),
+[agent-orchestration](https://github.com/madebyaris/agent-orchestration) —
+offer overlapping but differently-shaped primitives.
+
+mcp-chain's lane: ephemeral word-IDs for arbitrary N-to-N rendezvous between
+sessions, in a single Go binary with a tight resource budget.
+
+See [docs/alternatives.md](docs/alternatives.md) for the full comparison
+(research dated 2026-04-28).
+
 ## Install
 
 ### With Claude Code (recommended)
